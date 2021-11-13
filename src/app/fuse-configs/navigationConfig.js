@@ -16,12 +16,12 @@ const navigationConfig = [
     icon: 'apps',
     children: [
       {
-        id: 'example-component',
-        title: 'Example',
-        translate: 'EXAMPLE',
+        id: 'contacts',
+        title: 'People',
+        translate: 'PEOPLE',
         type: 'item',
-        icon: 'whatshot',
-        url: '/example',
+        icon: 'account_box',
+        url: '/apps/contacts/all',
       },
     ],
   },

@@ -3,6 +3,13 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 /* eslint-disable camelcase */
 
+// Set Global Axios Defaults
+axios.defaults.baseURL = 'http://127.0.0.1:8000';
+// axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_access_token');
+axios.defaults.withCredentials = true;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers.post.Accept = 'application/json';
+
 class JwtService extends FuseUtils.EventEmitter {
   init() {
     this.setInterceptors();
@@ -10,6 +17,7 @@ class JwtService extends FuseUtils.EventEmitter {
   }
 
   setInterceptors = () => {
+
     axios.interceptors.response.use(
       (response) => {
         return response;
@@ -61,11 +69,9 @@ class JwtService extends FuseUtils.EventEmitter {
   signInWithEmailAndPassword = (email, password) => {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/auth', {
-          data: {
+        .post('/api/auth/login/', {
             email,
             password,
-          },
         })
         .then((response) => {
           if (response.data.user) {
@@ -81,16 +87,16 @@ class JwtService extends FuseUtils.EventEmitter {
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/auth/access-token', {
-          data: {
-            access_token: this.getAccessToken(),
-          },
+        .get('/api/auth/token/verify', {
+            token: this.getAccessToken(),
         })
         .then((response) => {
           if (response.data.user) {
+            console.log("signed in with token")
             this.setSession(response.data.access_token);
             resolve(response.data.user);
           } else {
+            console.log("didn't sign in with token")
             this.logout();
             reject(new Error('Failed to login with token.'));
           }
