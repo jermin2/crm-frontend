@@ -78,15 +78,19 @@ export const setUserData = (user) => async (dispatch, getState) => {
   /*
         You can redirect the logged-in user to a specific route depending on his role
          */
-
-  history.location.state = {
-    redirectUrl: user.redirectUrl, // for example 'apps/academy'
-  };
-
+  if(user.redirectUrl) {
+    history.location.state = {
+      redirectUrl: user.redirectUrl, // for example 'apps/academy'
+    };
+  } else {
+    // history.location.state = { redirectUrl: '/'};
+  }
   /*
     Set User Settings
      */
-  dispatch(setDefaultSettings(user.data.settings));
+  if(user.settings){
+    dispatch(setDefaultSettings(user.settings));
+  }
 
   dispatch(setUser(user));
 };
@@ -193,8 +197,8 @@ export const updateUserData = (user) => async (dispatch, getState) => {
 
 const initialState = {
   role: [], // guest
-  data: {
-    displayName: 'John Doe',
+  person: {
+    first_name: 'John Doe',
     photoURL: 'assets/images/avatars/Velazquez.jpg',
     email: 'johndoe@withinpixels.com',
     shortcuts: ['calendar', 'mail', 'contacts', 'todo'],

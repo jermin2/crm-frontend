@@ -7,6 +7,7 @@ axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_a
 export const getContacts = createAsyncThunk(
   'contactsApp/contacts/getContacts',
   async (routeParams, { getState }) => {
+    console.log("fetch contacts");
     routeParams = routeParams || getState().contactsApp.contacts.routeParams;
     const response = await axios.get('/api/contacts-app/contacts', {
       params: routeParams,

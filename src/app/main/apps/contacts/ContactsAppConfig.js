@@ -1,3 +1,4 @@
+import { authRoles } from 'app/auth';
 import { lazy } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -7,6 +8,7 @@ const ContactsAppConfig = {
       config: {},
     },
   },
+  auth: authRoles.staff,
   routes: [
     {
       path: '/apps/contacts/:id',

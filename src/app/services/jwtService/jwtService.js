@@ -1,6 +1,7 @@
 import FuseUtils from '@fuse/utils/FuseUtils';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
+
 /* eslint-disable camelcase */
 
 // Set Global Axios Defaults
@@ -17,6 +18,17 @@ class JwtService extends FuseUtils.EventEmitter {
   }
 
   setInterceptors = () => {
+    axios.interceptors.request.use(
+      (config) => {
+        const token = this.getAccessToken();
+        if(token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      }, 
+      (error) => {
+        return Promise.reject(error)
+      });
 
     axios.interceptors.response.use(
       (response) => {
@@ -40,6 +52,8 @@ class JwtService extends FuseUtils.EventEmitter {
 
     if (!access_token) {
       this.emit('onNoAccessToken');
+      //redirect to login
+      console.log("Not logged in");
 
       return;
     }
@@ -74,7 +88,8 @@ class JwtService extends FuseUtils.EventEmitter {
             password,
         })
         .then((response) => {
-          if (response.data.user) {
+          console.log(response);
+          if (response.data) {
             this.setSession(response.data.access_token);
             resolve(response.data.user);
           } else {
@@ -87,16 +102,12 @@ class JwtService extends FuseUtils.EventEmitter {
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
       axios
-        .get('/api/auth/token/verify', {
-            token: this.getAccessToken(),
-        })
+        .get('/api/auth/user/')
         .then((response) => {
-          if (response.data.user) {
-            console.log("signed in with token")
-            this.setSession(response.data.access_token);
-            resolve(response.data.user);
+          console.log(response);
+          if (response.data) {
+            resolve(response.data);
           } else {
-            console.log("didn't sign in with token")
             this.logout();
             reject(new Error('Failed to login with token.'));
           }
