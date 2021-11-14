@@ -35,7 +35,7 @@ function MailConfirmPage() {
               </Typography>
 
               <div className="flex flex-col items-center justify-center pt-32 pb-24">
-                <Link className="font-normal" to="/pages/auth/login">
+                <Link className="font-normal" to="/login">
                   Go back to login
                 </Link>
               </div>

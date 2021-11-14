@@ -25,9 +25,9 @@ class JwtService extends FuseUtils.EventEmitter {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
-      }, 
+      },
       (error) => {
-        return Promise.reject(error)
+        return Promise.reject(error);
       });
 
     axios.interceptors.response.use(
@@ -159,6 +159,51 @@ class JwtService extends FuseUtils.EventEmitter {
 
   getAccessToken = () => {
     return window.localStorage.getItem('jwt_access_token');
+  };
+
+  sendResetLink = (email) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/auth/password/reset/', {
+          email,
+        })
+        .then((response) => {
+          resolve(response);
+          if (response.data) {
+            this.setSession(response.data.access_token);
+            resolve(response.data.user);
+          } else {
+            reject(response.data.error);
+          }
+        })
+        .catch((error) => {
+          reject(error.response.data);
+        });
+    });
+  };
+
+  resetPassword = ({ uid, token, new_password1, new_password2 }) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('/api/auth/password/reset/confirm/', {
+          uid,
+          token,
+          new_password1,
+          new_password2,
+        })
+        .then((response) => {
+          console.log("first res", response)
+          resolve(response);
+          if (response.data) {
+            resolve(response.data.user);
+          } else {
+            reject(response.data.error);
+          }
+        })
+        .catch((error) => {
+          reject(error.response.data);
+        });
+    });
   };
 }
 

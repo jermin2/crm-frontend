@@ -6,9 +6,10 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import Error404Page from 'app/main/404/Error404Page';
 import LoginConfig from 'app/main/login/LoginConfig';
 import LogoutConfig from 'app/main/logout/LogoutConfig';
+import ForgotPasswordConfig from 'app/main/auth/forgot-password/ForgotPasswordConfig';
+import ResetPasswordConfig from 'app/main/auth/reset-password/ResetPasswordConfig';
 import RegisterConfig from 'app/main/register/RegisterConfig';
 import MailConfirmPageConfig from 'app/main/mail-confirm/MailConfirmPageConfig';
-import { authRoles } from 'app/auth';
 
 const routeConfigs = [
   ...appsConfigs,
@@ -17,6 +18,8 @@ const routeConfigs = [
   LogoutConfig,
   RegisterConfig,
   MailConfirmPageConfig,
+  ForgotPasswordConfig,
+  ResetPasswordConfig,
 ];
 
 const routes = [
