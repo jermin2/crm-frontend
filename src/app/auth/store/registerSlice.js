@@ -9,15 +9,19 @@ export const submitRegister =
   async (dispatch) => {
     return jwtService
       .createUser({
-        displayName,
-        password,
+        password1:password,
+        password2:password,
         email,
       })
       .then((user) => {
+        console.log("user", user);
         dispatch(setUserData(user));
         return dispatch(registerSuccess());
       })
       .catch((errors) => {
+        errors = [
+          {type:'email', message:errors.email},
+          {type:'password',message:errors.password1}]
         return dispatch(registerError(errors));
       });
   };
