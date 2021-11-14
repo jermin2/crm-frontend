@@ -10,11 +10,16 @@ export const submitLogin =
     return jwtService
       .signInWithEmailAndPassword(email, password)
       .then((user) => {
+        console.log("logged in with", user)
         dispatch(setUserData(user));
-
+        
         return dispatch(loginSuccess());
       })
       .catch((errors) => {
+        errors = [
+          { type: 'email', message: errors.email },
+          { type: 'password', message: errors.password1 },
+        ];
         return dispatch(loginError(errors));
       });
   };

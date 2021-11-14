@@ -9,6 +9,7 @@ import { showMessage } from 'app/store/fuse/messageSlice';
 import auth0Service from 'app/services/auth0Service';
 import firebaseService from 'app/services/firebaseService';
 import jwtService from 'app/services/jwtService';
+import { authRoles } from '..';
 
 export const setUserDataAuth0 = (tokenData) => async (dispatch) => {
   const user = {
@@ -78,12 +79,16 @@ export const setUserData = (user) => async (dispatch, getState) => {
   /*
         You can redirect the logged-in user to a specific route depending on his role
          */
-  if(user.redirectUrl) {
-    history.location.state = {
-      redirectUrl: user.redirectUrl, // for example 'apps/academy'
-    };
-  } else {
-    // history.location.state = { redirectUrl: '/'};
+  switch (user.role) {
+    case authRoles.ROLE.guest:
+      history.location.state = {
+        redirectUrl: '/mail-confirm',
+      };
+      break;
+    default:
+      history.location.state = {
+        redirectUrl: '/',
+      };
   }
   /*
     Set User Settings
@@ -197,11 +202,11 @@ export const updateUserData = (user) => async (dispatch, getState) => {
 
 const initialState = {
   role: [], // guest
+  shortcuts: ['calendar', 'mail', 'contacts', 'todo'],
   person: {
     first_name: 'John Doe',
     photoURL: 'assets/images/avatars/Velazquez.jpg',
     email: 'johndoe@withinpixels.com',
-    shortcuts: ['calendar', 'mail', 'contacts', 'todo'],
   },
 };
 
@@ -209,7 +214,13 @@ const userSlice = createSlice({
   name: 'auth/user',
   initialState,
   reducers: {
-    setUser: (state, action) => action.payload,
+    setUser: (state, action) => {
+      // If there is no person, set it to the initial person
+      if(action.payload.person===null){
+        action.payload.person = initialState.person;
+      }
+      return action.payload;
+    },
     userLoggedOut: (state, action) => initialState,
   },
   extraReducers: {},

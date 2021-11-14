@@ -14,14 +14,18 @@ export const submitRegister =
         email,
       })
       .then((user) => {
-        console.log("user", user);
+        console.log("registered with", user)
         dispatch(setUserData(user));
         return dispatch(registerSuccess());
       })
       .catch((errors) => {
-        errors = [
-          {type:'email', message:errors.email},
-          {type:'password',message:errors.password1}]
+        console.log(errors)
+        if(errors) {
+          errors = [
+            { type: 'email', message: errors.email ? errors.email : '' },
+            { type: 'password', message: errors.password1 ? errors.password1 : '' },
+          ];
+        }
         return dispatch(registerError(errors));
       });
   };

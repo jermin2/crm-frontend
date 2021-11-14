@@ -7,6 +7,7 @@ import Error404Page from 'app/main/404/Error404Page';
 import LoginConfig from 'app/main/login/LoginConfig';
 import LogoutConfig from 'app/main/logout/LogoutConfig';
 import RegisterConfig from 'app/main/register/RegisterConfig';
+import MailConfirmPageConfig from 'app/main/mail-confirm/MailConfirmPageConfig';
 import { authRoles } from 'app/auth';
 
 const routeConfigs = [
@@ -15,6 +16,7 @@ const routeConfigs = [
   LoginConfig,
   LogoutConfig,
   RegisterConfig,
+  MailConfirmPageConfig,
 ];
 
 const routes = [

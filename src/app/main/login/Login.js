@@ -69,7 +69,6 @@ function Login() {
 
   function onSubmit(model) {
     dispatch(submitLogin(model));
-    reset(defaultValues);
   }
 
   return (
@@ -193,7 +192,7 @@ function Login() {
 
           <div className="flex flex-col items-center justify-center pb-32">
             <span className="font-normal">Don't have an account?</span>
-            <Link className="font-normal" to="/pages/auth/register-3">
+            <Link className="font-normal" to="/register">
               Create an account
             </Link>
           </div>
