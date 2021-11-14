@@ -24,7 +24,7 @@ export const submitResetLink =
 
 
         history.push({
-          pathname: '/login',
+          pathname: '/mail-reset',
         });
         return dispatch(resetSuccess());
       })

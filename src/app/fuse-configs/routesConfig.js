@@ -10,6 +10,7 @@ import ForgotPasswordConfig from 'app/main/auth/forgot-password/ForgotPasswordCo
 import ResetPasswordConfig from 'app/main/auth/reset-password/ResetPasswordConfig';
 import RegisterConfig from 'app/main/register/RegisterConfig';
 import MailConfirmPageConfig from 'app/main/mail-confirm/MailConfirmPageConfig';
+import MailResetConfig from 'app/main/auth/mail-reset/MailResetConfig';
 
 const routeConfigs = [
   ...appsConfigs,
@@ -20,6 +21,7 @@ const routeConfigs = [
   MailConfirmPageConfig,
   ForgotPasswordConfig,
   ResetPasswordConfig,
+  MailResetConfig,
 ];
 
 const routes = [
