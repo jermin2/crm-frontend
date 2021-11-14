@@ -80,7 +80,7 @@ export const setUserData = (user) => async (dispatch, getState) => {
         You can redirect the logged-in user to a specific route depending on his role
          */
   switch (user.role) {
-    case authRoles.ROLE.guest:
+    case authRoles.ROLE.unverified:
       history.location.state = {
         redirectUrl: '/mail-confirm',
       };

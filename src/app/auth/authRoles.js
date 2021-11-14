@@ -6,12 +6,14 @@ const authRoles = {
     admin: 'admin',
     staff: 'staff',
     user: 'user',
+    unverified: 'unverified',
     guest: 'guest',
   },
   admin: ['admin'],
   staff: ['admin', 'staff'],
   user: ['admin', 'staff', 'user'],
-  onlyGuest: ['guest'],
+  unverified: ['unverified'],
+  onlyGuest: [],
 };
 
 export default authRoles;

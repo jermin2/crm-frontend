@@ -7,7 +7,7 @@ const MailConfirmPageConfig = {
       config: {},
     },
   },
-  auth: authRoles.onlyGuest,
+  auth: authRoles.unverified,
   routes: [
     {
       path: '/mail-confirm',
