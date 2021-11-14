@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useDeepCompareEffect } from '@fuse/hooks';
 import { styled } from '@mui/material/styles';
-import ContactDialog from './ContactDialog';
+import ContactNewDialog from './ContactNewDialog';
 import ContactsHeader from './ContactsHeader';
 import ContactsList from './ContactsList';
 import ContactsSidebarContent from './ContactsSidebarContent';
@@ -17,10 +17,10 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
   '& .FusePageSimple-header': {
     minHeight: 72,
     height: 72,
-    [theme.breakpoints.up('lg')]: {
-      minHeight: 136,
-      height: 136,
-    },
+    // [theme.breakpoints.up('lg')]: {
+    //   minHeight: 136,
+    //   height: 136,
+    // },
   },
   '& .FusePageSimple-wrapper': {
     minHeight: 0,
@@ -64,7 +64,7 @@ function ContactsApp(props) {
         ref={pageLayout}
         innerScroll
       />
-      <ContactDialog />
+      <ContactNewDialog />
     </>
   );
 }

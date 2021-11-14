@@ -10,18 +10,17 @@ export const submitResetLink =
     return jwtService
       .sendResetLink(email)
       .then(() => {
-
         dispatch(
           showMessage({
-              message     : 'Password Reset Link Sent',//text or html
-              autoHideDuration: 6000,//ms
-              anchorOrigin: {
-                  vertical  : 'top',//top bottom
-                  horizontal: 'center'//left center right
-              },
-              variant: 'success'//success error info warning null
-          }));
-
+            message: 'Password Reset Link Sent', //text or html
+            autoHideDuration: 6000, //ms
+            anchorOrigin: {
+              vertical: 'top', //top bottom
+              horizontal: 'center', //left center right
+            },
+            variant: 'success', //success error info warning null
+          })
+        );
 
         history.push({
           pathname: '/mail-reset',
@@ -56,7 +55,6 @@ const resetSlice = createSlice({
   },
   extraReducers: {},
 });
-
 
 export const { resetSuccess, resetError } = resetSlice.actions;
 
