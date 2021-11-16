@@ -44,9 +44,17 @@ import {
   closeEditContactDialog,
 } from './store/contactsSlice';
 
+const familyRoles = [
+  { value: 1, label: 'Head' },
+  { value: 2, label: 'Spouse' },
+  { value: 3, label: 'Child' },
+  { value: 4, label: 'Relative' },
+];
 
-const familyRoles = [ {value:1, label:'Head'}, {value:2, label:'Spouse'}, {value:3, label:'Child'}, {value:4, label:'Relative'}]
-
+const families = [
+  { id: 1, familyName: 'TIU', members: ['Jermin', 'Apphia'] },
+  { id: 2, familyName: 'HUANG', members: ['Bob', 'Mary'] },
+];
 const months = Array.from({ length: 12 }, (item, i) => {
   return { label: new Date(0, i).toLocaleString('en-US', { month: 'long' }), value: i + 1 };
 });
@@ -182,24 +190,16 @@ function ContactNewDialog(props) {
       <AppBar position="static" elevation={0}>
         <Toolbar className="flex w-full">
           <Typography variant="subtitle1" color="inherit">
-            {contactDialog.type === 'new' ? 'New Contact' : 'Edit Contact'}
+            New Contact / Family
           </Typography>
         </Toolbar>
-        <div className="flex flex-col items-center justify-center pb-24">
-          <Avatar className="w-96 h-96" alt="contact avatar" src={avatar} />
-          {contactDialog.type === 'edit' && (
-            <Typography variant="h6" color="inherit" className="pt-8">
-              {name}
-            </Typography>
-          )}
-        </div>
       </AppBar>
       <form
         noValidate
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col md:overflow-hidden"
       >
-        <DialogContent classes={{ root: 'p-24' }}>
+        <DialogContent classes={{ root: 'p-24 contact-new-dialog' }} >
           <div className="flex mb-24 flex-wrap">
             <div className="sub-container">
               <div className="field-container">
@@ -255,7 +255,6 @@ function ContactNewDialog(props) {
                       <TextField
                         {...field}
                         label="Day"
-                        name="day"
                         InputLabelProps={{
                           shrink: true,
                         }}
@@ -281,7 +280,6 @@ function ContactNewDialog(props) {
                       <TextField
                         {...field}
                         label="Month"
-                        name="month"
                         InputLabelProps={{
                           shrink: true,
                         }}
@@ -307,7 +305,6 @@ function ContactNewDialog(props) {
                       <TextField
                         {...field}
                         label="Year"
-                        name="year"
                         InputLabelProps={{
                           shrink: true,
                         }}
@@ -326,22 +323,21 @@ function ContactNewDialog(props) {
                   name="familyRole"
                   render={({ field }) => (
                     <TextField
-                    {...field}
-                    label="Family Role"
-                    name="familyRole"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    select
-                    variant="outlined"
-                    fullWidth
-                  >
-                    {familyRoles.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                      {...field}
+                      label="Family Role"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      select
+                      variant="outlined"
+                      fullWidth
+                    >
+                      {familyRoles.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
                   )}
                 />
 
@@ -353,7 +349,8 @@ function ContactNewDialog(props) {
               </div>
             </div>
           </div>
-          <div className="flex row">
+
+          <div className="flex row mb-12">
             <RadioGroup aria-label="family" defaultValue="exisitng" name="radio-buttons-group">
               <FormControlLabel value="new" control={<Radio />} label="Create a new family" />
               <FormControlLabel
@@ -364,59 +361,64 @@ function ContactNewDialog(props) {
             </RadioGroup>
           </div>
 
-          <div className="flex row">Drop down box</div>
+          <div className="flex row mb-24">
+            <Controller
+              control={control}
+              name="existingFamily"
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Existing Family"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  select
+                  variant="outlined"
+                  fullWidth
+                >
+                  {families.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {/* {option.label} */}
+                      <ListItemText
+                        primary={option.familyName}
+                        secondary={option.members.toLocaleString()}
+                      />
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
+          </div>
 
-          <div className="flex row">Family stuff</div>
-
-          {/* <div className="flex">
-              <div className="min-w-48 pb-20">
-                <Typography variant="h6" color="inherit" className="pt-8">
-                    {name}'s Family
-                  </Typography>
-                <hr />
+          <div className="optional-family-fields">
+            <div className="min-w-48 pb-20">
+              <Typography variant="h6" color="inherit" className="pt-8">
+                Optional Family Fields
+              </Typography>
+              <hr />
             </div>
-            </div> */}
 
-          {/* {familyFields.map((familyField, i) => (
-            <div className="flex">
-              <div className="min-w-48 pt-20">
-                {familyField.icon ? <Icon color="action">{familyField.icon}</Icon> : <></>}
+            {familyFields.map((familyField, i) => (
+              <div className="flex">
+                <Controller
+                  control={control}
+                  name={familyField.name}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      className="mb-24"
+                      label={familyField.label}
+                      id={familyField.name}
+                      type={familyField.type}
+                      name={familyField.name}
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                />
               </div>
-              <Controller
-                control={control}
-                name={familyField.name}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    className="mb-24"
-                    label={familyField.label}
-                    id={familyField.name}
-                    type={familyField.type}
-                    name={familyField.name}
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              />
-            </div>
-          ))} */}
-
-          {/* <Typography variant="subtitle1" color="inherit">
-            Members
-          </Typography>
-          <List >
-            {familyMembers.map( (person, i) => (
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemAvatar>
-                    <Avatar className="w-20 h-20" alt="contact avatar" src={avatar} />
-                    </ListItemAvatar>
-              <ListItemText primary={`${person.first_name} ${person.last_name}`} />
-              <ListItemText secondary={person.family_role} className="pr-16 text-right"/>
-            </ListItemButton>
-          </ListItem>
             ))}
-          </List> */}
+          </div>
         </DialogContent>
 
         {contactDialog.type === 'new' ? (

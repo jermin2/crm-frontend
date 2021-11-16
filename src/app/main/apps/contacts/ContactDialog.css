@@ -1,11 +1,13 @@
 .sub-container {
     display: flex;
-    min-width: 400px;
-    flex-grow: 1
+    width: 100%;
+    flex-grow: 1;
+    flex-wrap: wrap;
 }
 
 .field-container {
-    width: 50%;
+    width: calc( 50% - 20px);
+    min-width: 300px;
     display: flex;
     margin: 10px;
     flex-grow: 1;
@@ -15,4 +17,16 @@
     align-self:center;
     min-width: 100px;
     width: 33%;
+}
+
+.optional-family-fields {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+
+}
+
+.contact-new-dialog {
+    max-width: 900px;
+    margin: auto;
 }
