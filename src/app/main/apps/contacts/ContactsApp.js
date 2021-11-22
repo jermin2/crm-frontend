@@ -11,6 +11,7 @@ import ContactsList from './ContactsList';
 import ContactsSidebarContent from './ContactsSidebarContent';
 import reducer from './store';
 import { getContacts } from './store/contactsSlice';
+import { getFamilies } from './store/familiesSlice';
 import { getUserData } from './store/userSlice';
 
 const Root = styled(FusePageSimple)(({ theme }) => ({
@@ -51,6 +52,7 @@ function ContactsApp(props) {
 
   useDeepCompareEffect(() => {
     dispatch(getContacts(routeParams));
+    dispatch(getFamilies(routeParams));
     dispatch(getUserData());
   }, [dispatch, routeParams]);
 

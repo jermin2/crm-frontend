@@ -34,6 +34,10 @@ import {
   closeEditContactDialog,
 } from './store/contactsSlice';
 
+import {
+  selectFamilies,
+} from './store/familiesSlice';
+
 const familyRoles = [
   { value: 1, label: 'Head' },
   { value: 2, label: 'Spouse' },
@@ -41,10 +45,6 @@ const familyRoles = [
   { value: 4, label: 'Relative' },
 ];
 
-const families = [
-  { id: 1, familyName: 'TIU', members: ['Jermin', 'Apphia'] },
-  { id: 2, familyName: 'HUANG', members: ['Bob', 'Mary'] },
-];
 const months = Array.from({ length: 12 }, (item, i) => {
   return { label: new Date(0, i).toLocaleString('en-US', { month: 'long' }), value: i + 1 };
 });
@@ -68,16 +68,16 @@ const defaultValues = {
  */
 const schema = yup.object().shape({
   per_first_name: yup.string().required('You must enter a name'),
-  existingFamily: yup.string()
-                    .when("addFamily", {
-                      is: "false",
-                      then: yup.string().required('You must select an existing family'),
-                    })
-                    
+  existingFamily: yup.string().when('addFamily', {
+    is: 'false',
+    then: yup.string().required('You must select an existing family'),
+  }),
 });
 
 function ContactNewDialog(props) {
   const dispatch = useDispatch();
+  const families = useSelector(selectFamilies);
+
   const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.contactDialog);
 
   const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
@@ -103,8 +103,8 @@ function ContactNewDialog(props) {
   ];
 
   const familyMembers = [
-    { first_name: 'Bobbby', last_name: 'Brown', family_role: 'Head' },
-    { first_name: 'Maryanne', last_name: 'Brown', family_role: 'Head' },
+    { per_first_name: 'Bobbby', last_name: 'Brown', family_role: 'Head' },
+    { per_first_name: 'Maryanne', last_name: 'Brown', family_role: 'Head' },
   ];
 
   const [showCreateFamily, setShowCreateFamily] = useState(false);
@@ -310,7 +310,7 @@ function ContactNewDialog(props) {
                   control={control}
                   defaultValue={1}
                   name="per_family_role"
-                  render={({ field: {value, onChange} }) => (
+                  render={({ field: { value, onChange } }) => (
                     <TextField
                       // {...field}
                       label="Family Role"
@@ -333,7 +333,7 @@ function ContactNewDialog(props) {
                 />
 
                 <div className="flex mx-4 p-2">
-                  <Button variant="outlined" style={{ 'borderRadius': '0px' }}>
+                  <Button variant="outlined" style={{ borderRadius: '0px' }}>
                     more..
                   </Button>
                 </div>
@@ -347,7 +347,7 @@ function ContactNewDialog(props) {
               control={control}
               defaultValue="false"
               name="addFamily"
-              render={({ field: {onChange, value} }) => (
+              render={({ field: { onChange, value } }) => (
                 <RadioGroup
                   // {...field}
                   aria-label="family"
@@ -376,6 +376,7 @@ function ContactNewDialog(props) {
               <Controller
                 control={control}
                 name="existingFamily"
+                defaultValue=""
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -391,8 +392,8 @@ function ContactNewDialog(props) {
                       <MenuItem key={option.id} value={option.id}>
                         {/* {option.label} */}
                         <ListItemText
-                          primary={option.familyName}
-                          secondary={option.members.toLocaleString()}
+                          primary={option.fam_family_name}
+                          secondary={option.family_members.flatMap( x => x.per_first_name).toLocaleString()}
                         />
                       </MenuItem>
                     ))}
@@ -413,7 +414,7 @@ function ContactNewDialog(props) {
                 <div className="flex" key={i}>
                   <Controller
                     control={control}
-                    name={"fam_".concat(familyField.name)}
+                    name={'fam_'.concat(familyField.name)}
                     render={({ field }) => (
                       <TextField
                         {...field}
