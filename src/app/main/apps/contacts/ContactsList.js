@@ -61,11 +61,6 @@ function ContactsList(props) {
         sortable: true,
       },
       {
-        Header: 'Job Title',
-        accessor: 'jobTitle',
-        sortable: true,
-      },
-      {
         Header: 'Email',
         accessor: 'per_email',
         sortable: true,

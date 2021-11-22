@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { getUserData } from './userSlice';
+import { getFamilies } from './familiesSlice';
 
 axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_access_token');
 
@@ -20,10 +21,11 @@ export const getContacts = createAsyncThunk(
 export const addContact = createAsyncThunk(
   'contactsApp/contacts/addContact',
   async (contact, { dispatch, getState }) => {
-    const response = await axios.post('/api/contacts-app/add-contact', { contact });
+    const response = await axios.post('/api/contacts-app/add-contact', contact);
     const data = await response.data;
-
+    console.log("add response", data);
     dispatch(getContacts());
+    dispatch(getFamilies());
 
     return data;
   }

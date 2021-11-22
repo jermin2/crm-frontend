@@ -116,9 +116,9 @@ function ContactNewDialog(props) {
     /**
      * Dialog type: 'edit'
      */
-    if (contactDialog.type === 'edit' && contactDialog.data) {
-      reset({ ...contactDialog.data });
-    }
+    // if (contactDialog.type === 'edit' && contactDialog.data) {
+    //   reset({ ...contactDialog.data });
+    // }
 
     /**
      * Dialog type: 'new'
@@ -156,7 +156,8 @@ function ContactNewDialog(props) {
   function onSubmit(data) {
     if (contactDialog.type === 'new') {
       console.log(data);
-      //dispatch(addContact(data));
+      dispatch(addContact(data));
+
     } // else {
     //   dispatch(addContact({ ...contactDialog.data, ...data }));
     // }
