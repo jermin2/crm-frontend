@@ -293,8 +293,8 @@ const familyMembers = [
                   <ListItemAvatar>
                     <Avatar className="w-20 h-20" alt="contact avatar" src={avatar} />
                     </ListItemAvatar>
-              <ListItemText primary={`${person.first_name} ${person.last_name}`} />
-              <ListItemText secondary={person.family_role} className="pr-16 text-right"/>
+              <ListItemText primary={`${person.per_first_name} ${person.per_last_name}`} />
+              <ListItemText secondary={person.per_family_role} className="pr-16 text-right"/>
             </ListItemButton>
           </ListItem>
             ))}

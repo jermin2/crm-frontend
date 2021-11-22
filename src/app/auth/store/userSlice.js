@@ -204,9 +204,9 @@ const initialState = {
   role: [], // guest
   shortcuts: ['calendar', 'mail', 'contacts', 'todo'],
   person: {
-    first_name: 'John Doe',
+    per_first_name: 'John Doe',
     photoURL: 'assets/images/avatars/Velazquez.jpg',
-    email: 'johndoe@withinpixels.com',
+    per_email: 'johndoe@withinpixels.com',
   },
 };
 
