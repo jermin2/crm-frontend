@@ -56,21 +56,6 @@ function ContactsList(props) {
         sortable: true,
       },
       {
-        Header: 'Family',
-        accessor: 'family.fam_family_name',
-        sortable: true,
-      },
-      {
-        Header: 'Email',
-        accessor: 'per_email',
-        sortable: true,
-      },
-      {
-        Header: 'Phone',
-        accessor: 'per_phone',
-        sortable: true,
-      },
-      {
         id: 'action',
         width: 128,
         sortable: false,

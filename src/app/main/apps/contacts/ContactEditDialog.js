@@ -14,12 +14,14 @@ import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import  List  from '@mui/material/List';
-import ListItem  from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
+
+import MenuItem from '@mui/material/MenuItem';
 
 import _ from '@lodash';
 import * as yup from 'yup';
@@ -64,8 +66,6 @@ function ContactEditDialog(props) {
     resolver: yupResolver(schema),
   });
 
-
-
   const { isValid, dirtyFields, errors } = formState;
 
   const id = watch('id');
@@ -73,27 +73,25 @@ function ContactEditDialog(props) {
   const avatar = watch('avatar');
   const contactFields = [
     { icon: null, name: 'per_last_name', label: 'Last Name' },
-    { icon: 'star', name: 'nickname', label: 'Nickname' },
-    { icon: 'phone', name: 'phone', label: 'Phone' },
-    { icon: 'email', name: 'email', label: 'Email' },
-    { icon: 'cake', name: 'birthday', label: '', type: 'date' },
-    { icon: 'home', name: 'address', label: 'Address' },
-    { icon: 'home', name: 'per_family_role', label: 'Family Role' },
+    { icon: 'phone', name: 'per_phone', label: 'Phone' },
+    { icon: 'email', name: 'per_email', label: 'Email' },
+    { icon: 'cake', name: 'per_birthday', label: '', type: 'date' },
+    { icon: 'cake', name: 'school_year', label: 'School / Graduation Year' },
   ];
-const familyFields = [
-  { icon: 'account_circle', name: 'fam_family_name', label: 'Family Name' },
-  { icon: 'home', name: 'fam_family_address', label: 'Family Address' },
-  { icon: 'email', name: 'fam_family_email', label: 'Family Email' },
-]
-  
-const familyMembers = [
-  {per_first_name: 'Bob', per_last_name: 'Brown', per_family_role: 'Head'},
-  {per_first_name: 'Maryanne', per_last_name: 'Brown', per_family_role: 'Head'}
-]
+  const familyFields = [
+    { icon: 'account_circle', name: 'family.fam_family_name', label: 'Family Name' },
+    { icon: 'home', name: 'family.fam_family_address', label: 'Family Address' },
+    { icon: 'email', name: 'family.fam_family_email', label: 'Family Email' },
+  ];
 
-const {familyMembersA, setFamilyMembers} = useState(familyMembers);
+  const familyMembersA = [
+    { per_first_name: 'Bob', per_last_name: 'Brown', per_family_role: 'Head' },
+    { per_first_name: 'Maryanne', per_last_name: 'Brown', per_family_role: 'Head' },
+  ];
 
-console.log("fam members", familyMembersA);
+  const [ familyMembers, setFamilyMembers ] = useState(familyMembersA);
+
+  const familyRoles = useSelector(({ contactsApp }) => contactsApp.families.roles);
   /**
    * Initialize Dialog with Data
    */
@@ -101,10 +99,13 @@ console.log("fam members", familyMembersA);
     /**
      * Dialog type: 'edit'
      */
+    // PUT OTHER SETUP STUFF HERE
+    
     if (contactDialog.type === 'edit' && contactDialog.data) {
       reset({ ...contactDialog.data });
+      setFamilyMembers(contactDialog.data.family.family_members);
     }
-
+    
   }, [contactDialog.data, contactDialog.type, reset]);
 
   /**
@@ -145,6 +146,7 @@ console.log("fam members", familyMembersA);
     closeComposeDialog();
   }
   console.log("data", contactDialog.data)
+  console.log("fam r", familyRoles);
   return (
     <Dialog
       classes={{
@@ -214,7 +216,6 @@ console.log("fam members", familyMembersA);
                     label={contactField.label}
                     id={contactField.name}
                     type={contactField.type}
-                    name={contactField.name}
                     variant="outlined"
                     fullWidth
                   />
@@ -222,6 +223,34 @@ console.log("fam members", familyMembersA);
               />
             </div>
           ))}
+
+          <div className="flex">
+            <div className="min-w-48 pt-20">
+              {/* {contactField.icon ? <Icon color="action">{contactField.icon}</Icon> : <></>} */}
+            </div>
+            <Controller
+              control={control}
+              defaultValue={1}
+              name="per_family_role"
+              render={({ field: { value, onChange } }) => (
+                <TextField
+                  className="mb-24"
+                  label="Family Role"
+                  value={value}
+                  onChange={onChange}
+                  select
+                  variant="outlined"
+                  fullWidth
+                >
+                  {familyRoles.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.family_role}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+            />
+          </div>
 
           <div className="flex">
             <div className="min-w-48 pt-20">
@@ -245,18 +274,16 @@ console.log("fam members", familyMembersA);
             />
           </div>
 
-
           <div className="flex">
-              <div className="min-w-48 pb-20">
-                <Typography variant="h6" color="inherit" className="pt-8">
-                    {name}'s Family
-                  </Typography>
-                <hr />
+            <div className="min-w-48 pb-20">
+              <Typography variant="h6" color="inherit" className="pt-8">
+                Family
+              </Typography>
+              <hr />
             </div>
-            </div>
-            
+          </div>
 
-            {familyFields.map((familyField, i) => (
+          {familyFields.map((familyField, i) => (
             <div className="flex">
               <div className="min-w-48 pt-20">
                 {familyField.icon ? <Icon color="action">{familyField.icon}</Icon> : <></>}
@@ -271,7 +298,6 @@ console.log("fam members", familyMembersA);
                     label={familyField.label}
                     id={familyField.name}
                     type={familyField.type}
-                    name={familyField.name}
                     variant="outlined"
                     fullWidth
                   />
@@ -283,20 +309,24 @@ console.log("fam members", familyMembersA);
           <Typography variant="subtitle1" color="inherit">
             Members
           </Typography>
-          <List >
-            {familyMembers.map( (person, i) => (
+          <List>
+            {familyMembers && familyRoles ? familyMembers.map((person, i) => (
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemAvatar>
                     <Avatar className="w-20 h-20" alt="contact avatar" src={avatar} />
-                    </ListItemAvatar>
-              <ListItemText primary={`${person.per_first_name} ${person.per_last_name}`} />
-              <ListItemText secondary={person.per_family_role} className="pr-16 text-right"/>
-            </ListItemButton>
-          </ListItem>
-            ))}
+                  </ListItemAvatar>
+                  <ListItemText primary={`${person.per_first_name} ${person.per_last_name}`} />
+                      <ListItemText
+                        secondary={
+                          person.family_role_text
+                        }
+                        className="pr-16 text-right"
+                      />
+                </ListItemButton>
+              </ListItem>
+            )) : ''}
           </List>
-
         </DialogContent>
 
         {contactDialog.type === 'new' ? (

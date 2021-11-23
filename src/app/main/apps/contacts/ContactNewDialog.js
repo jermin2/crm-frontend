@@ -36,13 +36,6 @@ import {
 
 import { selectFamilies } from './store/familiesSlice';
 
-// const familyRoles = [
-//   { value: 1, label: 'Head' },
-//   { value: 2, label: 'Spouse' },
-//   { value: 3, label: 'Child' },
-//   { value: 4, label: 'Relative' },
-// ];
-
 const months = Array.from({ length: 12 }, (item, i) => {
   return { label: new Date(0, i).toLocaleString('en-US', { month: 'long' }), value: i + 1 };
 });
@@ -53,9 +46,6 @@ const defaultValues = {
   per_first_name: '',
   per_last_name: '',
   avatar: 'assets/images/avatars/profile.jpg',
-  per_day_of_birth: '',
-  per_month_of_birth: '',
-  per_year_of_birth: '',
   per_email: '',
   per_phone: '',
   existingFamily: '',
