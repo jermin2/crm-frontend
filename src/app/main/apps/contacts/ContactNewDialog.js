@@ -34,9 +34,7 @@ import {
   closeEditContactDialog,
 } from './store/contactsSlice';
 
-import {
-  selectFamilies,
-} from './store/familiesSlice';
+import { selectFamilies } from './store/familiesSlice';
 
 const familyRoles = [
   { value: 1, label: 'Head' },
@@ -61,6 +59,10 @@ const defaultValues = {
   per_email: '',
   per_phone: '',
   existingFamily: '',
+  set_school_year: '',
+  fam_name: '',
+  fam_address: '',
+  fam_email: '',
 };
 
 /**
@@ -72,13 +74,17 @@ const schema = yup.object().shape({
     is: 'false',
     then: yup.string().required('You must select an existing family'),
   }),
+  fam_name: yup.string().when('addFamily', {
+    is: 'true',
+    then: yup.string().required('You must select enter a family name'),
+  }),
 });
 
 function ContactNewDialog(props) {
   const dispatch = useDispatch();
   const families = useSelector(selectFamilies);
 
-  const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.contactDialog);
+  const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.newContactDialog);
 
   const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
     mode: 'onChange',
@@ -97,9 +103,9 @@ function ContactNewDialog(props) {
     { name: 'birthday', label: 'Birthday', type: 'date' },
   ];
   const familyFields = [
-    { icon: 'account_circle', name: 'name', label: 'Family Name' },
-    { icon: 'home', name: 'address', label: 'Family Address' },
-    { icon: 'email', name: 'email', label: 'Family Email' },
+    { icon: 'account_circle', name: 'name', label: 'Family Name', type:'text'},
+    { icon: 'home', name: 'address', label: 'Family Address (Optional)' },
+    { icon: 'email', name: 'email', label: 'Family Email (Optional)', type:'email' },
   ];
 
   const familyMembers = [
@@ -113,24 +119,16 @@ function ContactNewDialog(props) {
    * Initialize Dialog with Data
    */
   const initDialog = useCallback(() => {
-    /**
-     * Dialog type: 'edit'
-     */
-    // if (contactDialog.type === 'edit' && contactDialog.data) {
-    //   reset({ ...contactDialog.data });
-    // }
 
     /**
      * Dialog type: 'new'
      */
-    if (contactDialog.type === 'new') {
-      reset({
-        ...defaultValues,
-        ...contactDialog.data,
-        id: FuseUtils.generateGUID(),
-      });
-    }
-  }, [contactDialog.data, contactDialog.type, reset]);
+    setShowCreateFamily(false);
+    reset({
+      ...defaultValues,
+      id: FuseUtils.generateGUID(),
+    });
+  }, [reset]);
 
   /**
    * On Dialog Open
@@ -157,7 +155,6 @@ function ContactNewDialog(props) {
     if (contactDialog.type === 'new') {
       console.log(data);
       dispatch(addContact(data));
-
     } // else {
     //   dispatch(addContact({ ...contactDialog.data, ...data }));
     // }
@@ -171,7 +168,7 @@ function ContactNewDialog(props) {
     dispatch(removeContact(id));
     closeComposeDialog();
   }
-
+  console.log(contactDialog.props);
   return (
     <Dialog
       classes={{
@@ -241,7 +238,23 @@ function ContactNewDialog(props) {
 
             <div className="sub-container">
               <div className="field-container row">
-                <div className="date-field">
+                <Controller
+                  control={control}
+                  name="set_school_year"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="School Year / Graduation Year"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      variant="outlined"
+                      type="number"
+                      fullWidth
+                    />
+                  )}
+                />
+                {/* <div className="date-field">
                   <Controller
                     control={control}
                     name="per_day_of_birth"
@@ -303,7 +316,7 @@ function ContactNewDialog(props) {
                       />
                     )}
                   />
-                </div>
+                </div> */}
               </div>
 
               <div className="field-container">
@@ -350,14 +363,13 @@ function ContactNewDialog(props) {
               name="addFamily"
               render={({ field: { onChange, value } }) => (
                 <RadioGroup
-                  // {...field}
                   aria-label="family"
                   defaultValue="true"
                   name="radio-buttons-group"
                   value={value}
-                  // onChange={}
                   onChange={(e) => {
                     setShowCreateFamily(e.target.value === 'true');
+                    // TODO: Set the last name of the new family to be the current last name
                     onChange(e);
                   }}
                 >
@@ -394,7 +406,9 @@ function ContactNewDialog(props) {
                         {/* {option.label} */}
                         <ListItemText
                           primary={option.fam_family_name}
-                          secondary={option.family_members.flatMap( x => x.per_first_name).toLocaleString()}
+                          secondary={option.family_members
+                            .flatMap((x) => x.per_first_name)
+                            .toLocaleString()}
                         />
                       </MenuItem>
                     ))}
@@ -406,7 +420,7 @@ function ContactNewDialog(props) {
             <div className="optional-family-fields">
               <div className="min-w-48 pb-20">
                 <Typography variant="h6" color="inherit" className="pt-8">
-                  Optional Family Fields
+                  Family Fields
                 </Typography>
                 <hr />
               </div>
@@ -416,14 +430,13 @@ function ContactNewDialog(props) {
                   <Controller
                     control={control}
                     name={'fam_'.concat(familyField.name)}
+                    defaultValue=''
                     render={({ field }) => (
                       <TextField
                         {...field}
                         className="mb-24"
                         label={familyField.label}
-                        id={familyField.name}
                         type={familyField.type}
-                        name={familyField.name}
                         variant="outlined"
                         fullWidth
                       />

@@ -130,12 +130,16 @@ const contactsSlice = createSlice({
   initialState: contactsAdapter.getInitialState({
     searchText: '',
     routeParams: {},
-    contactDialog: {
-      type: 'new',
+    editContactDialog: {
       props: {
         open: false,
       },
       data: null,
+    },
+    newContactDialog: {
+      props: {
+        open: false,
+      },
     },
   }),
   reducers: {
@@ -146,25 +150,23 @@ const contactsSlice = createSlice({
       prepare: (event) => ({ payload: event.target.value || '' }),
     },
     openNewContactDialog: (state, action) => {
-      state.contactDialog = {
+      state.newContactDialog = {
         type: 'new',
         props: {
           open: true,
         },
-        data: null,
       };
     },
     closeNewContactDialog: (state, action) => {
-      state.contactDialog = {
+      state.newContactDialog = {
         type: 'new',
         props: {
           open: false,
         },
-        data: null,
       };
     },
     openEditContactDialog: (state, action) => {
-      state.contactDialog = {
+      state.editContactDialog = {
         type: 'edit',
         props: {
           open: true,
@@ -173,7 +175,7 @@ const contactsSlice = createSlice({
       };
     },
     closeEditContactDialog: (state, action) => {
-      state.contactDialog = {
+      state.editContactDialog = {
         type: 'edit',
         props: {
           open: false,

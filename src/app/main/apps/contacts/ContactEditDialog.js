@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import  List  from '@mui/material/List';
@@ -34,8 +34,8 @@ import {
 
 const defaultValues = {
   id: '',
-  name: '',
-  lastName: '',
+  per_first_name: '',
+  per_last_name: '',
   avatar: 'assets/images/avatars/profile.jpg',
   nickname: '',
   company: '',
@@ -56,7 +56,7 @@ const schema = yup.object().shape({
 
 function ContactEditDialog(props) {
   const dispatch = useDispatch();
-  const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.contactDialog);
+  const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.editContactDialog);
 
   const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
     mode: 'onChange',
@@ -64,29 +64,36 @@ function ContactEditDialog(props) {
     resolver: yupResolver(schema),
   });
 
+
+
   const { isValid, dirtyFields, errors } = formState;
 
   const id = watch('id');
   const name = watch('name');
   const avatar = watch('avatar');
   const contactFields = [
-    { icon: null, name: 'lastName', label: 'Last Name' },
+    { icon: null, name: 'per_last_name', label: 'Last Name' },
     { icon: 'star', name: 'nickname', label: 'Nickname' },
     { icon: 'phone', name: 'phone', label: 'Phone' },
     { icon: 'email', name: 'email', label: 'Email' },
     { icon: 'cake', name: 'birthday', label: '', type: 'date' },
     { icon: 'home', name: 'address', label: 'Address' },
+    { icon: 'home', name: 'per_family_role', label: 'Family Role' },
   ];
 const familyFields = [
-  { icon: 'account_circle', name: 'name', label: 'Family Name' },
-  { icon: 'home', name: 'address', label: 'Family Address' },
-  { icon: 'email', name: 'email', label: 'Family Email' },
+  { icon: 'account_circle', name: 'fam_family_name', label: 'Family Name' },
+  { icon: 'home', name: 'fam_family_address', label: 'Family Address' },
+  { icon: 'email', name: 'fam_family_email', label: 'Family Email' },
 ]
   
 const familyMembers = [
-  {first_name: 'Bob', last_name: 'Brown', family_role: 'Head'},
-  {first_name: 'Maryanne', last_name: 'Brown', family_role: 'Head'}
+  {per_first_name: 'Bob', per_last_name: 'Brown', per_family_role: 'Head'},
+  {per_first_name: 'Maryanne', per_last_name: 'Brown', per_family_role: 'Head'}
 ]
+
+const {familyMembersA, setFamilyMembers} = useState(familyMembers);
+
+console.log("fam members", familyMembersA);
   /**
    * Initialize Dialog with Data
    */
@@ -98,16 +105,6 @@ const familyMembers = [
       reset({ ...contactDialog.data });
     }
 
-    /**
-     * Dialog type: 'new'
-     */
-    if (contactDialog.type === 'new') {
-      reset({
-        ...defaultValues,
-        ...contactDialog.data,
-        id: FuseUtils.generateGUID(),
-      });
-    }
   }, [contactDialog.data, contactDialog.type, reset]);
 
   /**
@@ -147,7 +144,7 @@ const familyMembers = [
     dispatch(removeContact(id));
     closeComposeDialog();
   }
-
+  console.log("data", contactDialog.data)
   return (
     <Dialog
       classes={{
@@ -185,15 +182,15 @@ const familyMembers = [
             </div>
             <Controller
               control={control}
-              name="name"
+              name="per_first_name"
               render={({ field }) => (
                 <TextField
                   {...field}
                   className="mb-24"
                   label="Name"
                   id="name"
-                  error={!!errors.name}
-                  helperText={errors?.name?.message}
+                  error={!!errors.per_first_name}
+                  helperText={errors?.per_first_name?.message}
                   variant="outlined"
                   required
                   fullWidth
