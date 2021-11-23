@@ -6,7 +6,7 @@ axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_a
 
 export const getFamilies = createAsyncThunk(
   'contactsApp/families/getFamilies',
-  async (routeParams, { getState }) => {
+  async (routeParams, { dispatch, getState }) => {
 
     routeParams = routeParams || getState().contactsApp.families.routeParams;
     const response = await axios.get('/api/contacts-app/familys', {
@@ -14,7 +14,19 @@ export const getFamilies = createAsyncThunk(
     });
     const data = await response.data;
     console.log("get families", data);
+    console.log("calling get roles")
+    dispatch(getRoles());
     return { data, routeParams };
+  }
+);
+
+export const getRoles = createAsyncThunk(
+  'contactsApp/families/getRoles',
+  async (routeParams, { getState }) => {
+    const response = await axios.get('/api/contacts-app/familyRoles');
+    const data = await response.data;
+    console.log("get roles", data);
+    return { data };
   }
 );
 
@@ -36,6 +48,9 @@ const familiesSlice = createSlice({
       },
       data: null,
     },
+    roles: {
+      data: null,
+    }
   }),
   reducers: {
     setContactsSearchText: {
@@ -58,6 +73,11 @@ const familiesSlice = createSlice({
       state.routeParams = routeParams;
       state.searchText = '';
     },
+    [getRoles.fulfilled]: (state, action) => {
+
+      const {data} = action.payload;
+      state.roles = data;
+    }
   },
 });
 

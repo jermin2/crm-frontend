@@ -36,12 +36,12 @@ import {
 
 import { selectFamilies } from './store/familiesSlice';
 
-const familyRoles = [
-  { value: 1, label: 'Head' },
-  { value: 2, label: 'Spouse' },
-  { value: 3, label: 'Child' },
-  { value: 4, label: 'Relative' },
-];
+// const familyRoles = [
+//   { value: 1, label: 'Head' },
+//   { value: 2, label: 'Spouse' },
+//   { value: 3, label: 'Child' },
+//   { value: 4, label: 'Relative' },
+// ];
 
 const months = Array.from({ length: 12 }, (item, i) => {
   return { label: new Date(0, i).toLocaleString('en-US', { month: 'long' }), value: i + 1 };
@@ -83,7 +83,7 @@ const schema = yup.object().shape({
 function ContactNewDialog(props) {
   const dispatch = useDispatch();
   const families = useSelector(selectFamilies);
-
+  const familyRoles = useSelector(({ contactsApp }) => contactsApp.families.roles);
   const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.newContactDialog);
 
   const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
@@ -338,8 +338,8 @@ function ContactNewDialog(props) {
                       fullWidth
                     >
                       {familyRoles.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.family_role}
                         </MenuItem>
                       ))}
                     </TextField>
