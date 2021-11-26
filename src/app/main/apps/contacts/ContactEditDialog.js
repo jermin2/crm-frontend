@@ -39,13 +39,10 @@ const defaultValues = {
   per_first_name: '',
   per_last_name: '',
   avatar: 'assets/images/avatars/profile.jpg',
-  nickname: '',
-  company: '',
-  jobTitle: '',
-  email: '',
-  phone: '',
-  address: '',
-  birthday: '',
+  per_email: '',
+  per_phone: '',
+  per_birthday: '',
+  school_year: '',
   notes: '',
 };
 
@@ -53,7 +50,7 @@ const defaultValues = {
  * Form Validation Schema
  */
 const schema = yup.object().shape({
-  name: yup.string().required('You must enter a name'),
+  per_first_name: yup.string().required('You must enter a name'),
 });
 
 function ContactEditDialog(props) {
@@ -76,7 +73,7 @@ function ContactEditDialog(props) {
     { icon: 'phone', name: 'per_phone', label: 'Phone' },
     { icon: 'email', name: 'per_email', label: 'Email' },
     { icon: 'cake', name: 'per_birthday', label: '', type: 'date' },
-    { icon: 'cake', name: 'school_year', label: 'School / Graduation Year' },
+    { icon: 'cake', name: 'school_year', label: 'School / Graduation Year', type: 'number' },
   ];
   const familyFields = [
     { icon: 'account_circle', name: 'family.fam_family_name', label: 'Family Name' },
@@ -130,11 +127,11 @@ function ContactEditDialog(props) {
    * Form Submit
    */
   function onSubmit(data) {
-    if (contactDialog.type === 'new') {
-      dispatch(addContact(data));
-    } else {
-      dispatch(updateContact({ ...contactDialog.data, ...data }));
-    }
+    data.family.action = "update"
+    console.log({...contactDialog.data})
+    console.log(data)
+    
+    dispatch(updateContact({ ...contactDialog.data, ...data }));
     closeComposeDialog();
   }
 
@@ -145,8 +142,7 @@ function ContactEditDialog(props) {
     dispatch(removeContact(id));
     closeComposeDialog();
   }
-  console.log("data", contactDialog.data)
-  console.log("fam r", familyRoles);
+
   return (
     <Dialog
       classes={{
@@ -209,6 +205,7 @@ function ContactEditDialog(props) {
               <Controller
                 control={control}
                 name={contactField.name}
+                defaultValue=''
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -259,6 +256,7 @@ function ContactEditDialog(props) {
             <Controller
               control={control}
               name="notes"
+              defaultValue=""
               render={({ field }) => (
                 <TextField
                   {...field}
@@ -291,6 +289,7 @@ function ContactEditDialog(props) {
               <Controller
                 control={control}
                 name={familyField.name}
+                defaultValue=""
                 render={({ field }) => (
                   <TextField
                     {...field}

@@ -48,11 +48,7 @@ const defaultValues = {
   avatar: 'assets/images/avatars/profile.jpg',
   per_email: '',
   per_phone: '',
-  existingFamily: '',
-  set_school_year: '',
-  fam_name: '',
-  fam_address: '',
-  fam_email: '',
+  school_year: '',
 };
 
 /**
@@ -60,14 +56,14 @@ const defaultValues = {
  */
 const schema = yup.object().shape({
   per_first_name: yup.string().required('You must enter a name'),
-  existingFamily: yup.string().when('addFamily', {
-    is: 'false',
-    then: yup.string().required('You must select an existing family'),
-  }),
-  fam_name: yup.string().when('addFamily', {
-    is: 'true',
-    then: yup.string().required('You must select enter a family name'),
-  }),
+  // existingFamily: yup.string().when('addFamily', {
+  //   is: 'false',
+  //   then: yup.string().required('You must select an existing family'),
+  // }),
+  // fam_name: yup.string().when('addFamily', {
+  //   is: 'true',
+  //   then: yup.string().required('You must select enter a family name'),
+  // }),
 });
 
 function ContactNewDialog(props) {
@@ -93,9 +89,9 @@ function ContactNewDialog(props) {
     { name: 'birthday', label: 'Birthday', type: 'date' },
   ];
   const familyFields = [
-    { icon: 'account_circle', name: 'name', label: 'Family Name', type:'text'},
-    { icon: 'home', name: 'address', label: 'Family Address (Optional)' },
-    { icon: 'email', name: 'email', label: 'Family Email (Optional)', type:'email' },
+    { icon: 'account_circle', name: 'family.fam_family_name', label: 'Family Name', type:'text'},
+    { icon: 'home', name: 'family.fam_family_address', label: 'Family Address (Optional)' },
+    { icon: 'email', name: 'family.fam_family_email', label: 'Family Email (Optional)', type:'email' },
   ];
 
   const familyMembers = [
@@ -142,8 +138,16 @@ function ContactNewDialog(props) {
    * Form Submit
    */
   function onSubmit(data) {
+    // Make this tidies
+    if(data.family.addFamily==="true"){
+      data.family.id = "";
+      data.family.action = "create"
+      console.log("removed family id")
+    } else {
+      data.family.action = "fetch"
+    }
     if (contactDialog.type === 'new') {
-      console.log(data);
+      console.log("submit", data);
       dispatch(addContact(data));
     } // else {
     //   dispatch(addContact({ ...contactDialog.data, ...data }));
@@ -230,7 +234,7 @@ function ContactNewDialog(props) {
               <div className="field-container row">
                 <Controller
                   control={control}
-                  name="set_school_year"
+                  name="school_year"
                   render={({ field }) => (
                     <TextField
                       {...field}
@@ -350,7 +354,7 @@ function ContactNewDialog(props) {
               rules={{ required: true }}
               control={control}
               defaultValue="false"
-              name="addFamily"
+              name="family.addFamily"
               render={({ field: { onChange, value } }) => (
                 <RadioGroup
                   aria-label="family"
@@ -378,7 +382,7 @@ function ContactNewDialog(props) {
             <div className="flex row mb-24">
               <Controller
                 control={control}
-                name="existingFamily"
+                name="family.id"
                 defaultValue=""
                 render={({ field }) => (
                   <TextField
@@ -419,7 +423,7 @@ function ContactNewDialog(props) {
                 <div className="flex" key={i}>
                   <Controller
                     control={control}
-                    name={'fam_'.concat(familyField.name)}
+                    name={familyField.name}
                     defaultValue=''
                     render={({ field }) => (
                       <TextField

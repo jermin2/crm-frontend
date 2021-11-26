@@ -13,6 +13,7 @@ export const getContacts = createAsyncThunk(
       params: routeParams,
     });
     const data = await response.data;
+    console.log('gathered data', data)
 
     return { data, routeParams };
   }
@@ -34,7 +35,9 @@ export const addContact = createAsyncThunk(
 export const updateContact = createAsyncThunk(
   'contactsApp/contacts/updateContact',
   async (contact, { dispatch, getState }) => {
-    const response = await axios.post('/api/contacts-app/update-contact', { contact });
+    
+    const id = contact.id.toString();
+    const response = await axios.put('/api/contacts-app/update-contact/' + id , contact );
     const data = await response.data;
 
     dispatch(getContacts());
