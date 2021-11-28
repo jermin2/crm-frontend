@@ -43,8 +43,8 @@ const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
 const defaultValues = {
   id: '',
-  per_first_name: '',
-  per_last_name: '',
+  per_firstName: '',
+  per_lastName: '',
   avatar: 'assets/images/avatars/profile.jpg',
   per_email: '',
   per_phone: '',
@@ -55,7 +55,7 @@ const defaultValues = {
  * Form Validation Schema
  */
 const schema = yup.object().shape({
-  per_first_name: yup.string().required('You must enter a name'),
+  per_firstName: yup.string().required('You must enter a name'),
   // existingFamily: yup.string().when('addFamily', {
   //   is: 'false',
   //   then: yup.string().required('You must select an existing family'),
@@ -84,19 +84,19 @@ function ContactNewDialog(props) {
   const name = watch('name');
   const avatar = watch('avatar');
   const contactFields = [
-    { name: 'per_last_name', label: 'Last Name' },
+    { name: 'per_lastName', label: 'Last Name' },
     { name: 'familyRole', label: 'Family Role' },
     { name: 'birthday', label: 'Birthday', type: 'date' },
   ];
   const familyFields = [
-    { icon: 'account_circle', name: 'family.fam_family_name', label: 'Family Name', type:'text'},
-    { icon: 'home', name: 'family.fam_family_address', label: 'Family Address (Optional)' },
-    { icon: 'email', name: 'family.fam_family_email', label: 'Family Email (Optional)', type:'email' },
+    { icon: 'account_circle', name: 'family.fam_familyName', label: 'Family Name', type:'text'},
+    { icon: 'home', name: 'family.fam_familyAddress', label: 'Family Address (Optional)' },
+    { icon: 'email', name: 'family.fam_familyEmail', label: 'Family Email (Optional)', type:'email' },
   ];
 
   const familyMembers = [
-    { per_first_name: 'Bobbby', last_name: 'Brown', family_role: 'Head' },
-    { per_first_name: 'Maryanne', last_name: 'Brown', family_role: 'Head' },
+    { per_firstName: 'Bobbby', last_name: 'Brown', family_role: 'Head' },
+    { per_firstName: 'Maryanne', last_name: 'Brown', family_role: 'Head' },
   ];
 
   const [showCreateFamily, setShowCreateFamily] = useState(false);
@@ -191,14 +191,14 @@ function ContactNewDialog(props) {
               <div className="field-container">
                 <Controller
                   control={control}
-                  name="per_first_name"
+                  name="per_firstName"
                   render={({ field }) => (
                     <TextField
                       {...field}
                       label="First Name"
                       id="firstName"
-                      error={!!errors.per_first_name}
-                      helperText={errors?.per_first_name?.message}
+                      error={!!errors.per_firstName}
+                      helperText={errors?.per_firstName?.message}
                       InputLabelProps={{
                         shrink: true,
                       }}
@@ -213,7 +213,7 @@ function ContactNewDialog(props) {
               <div className="field-container">
                 <Controller
                   control={control}
-                  name="per_last_name"
+                  name="per_lastName"
                   render={({ field }) => (
                     <TextField
                       {...field}
@@ -317,7 +317,7 @@ function ContactNewDialog(props) {
                 <Controller
                   control={control}
                   defaultValue={1}
-                  name="per_family_role"
+                  name="per_familyRole"
                   render={({ field: { value, onChange } }) => (
                     <TextField
                       // {...field}
@@ -399,9 +399,9 @@ function ContactNewDialog(props) {
                       <MenuItem key={option.id} value={option.id}>
                         {/* {option.label} */}
                         <ListItemText
-                          primary={option.fam_family_name}
+                          primary={option.fam_familyName}
                           secondary={option.family_members
-                            .flatMap((x) => x.per_first_name)
+                            .flatMap((x) => x.per_firstName)
                             .toLocaleString()}
                         />
                       </MenuItem>

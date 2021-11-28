@@ -45,13 +45,13 @@ function ContactsList(props) {
       },
       {
         Header: 'First Name',
-        accessor: 'per_first_name',
+        accessor: 'per_firstName',
         className: 'font-medium',
         sortable: true,
       },
       {
         Header: 'Last Name',
-        accessor: 'per_last_name',
+        accessor: 'per_lastName',
         className: 'font-medium',
         sortable: true,
       },

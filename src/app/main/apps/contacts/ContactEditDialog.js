@@ -36,8 +36,8 @@ import {
 
 const defaultValues = {
   id: '',
-  per_first_name: '',
-  per_last_name: '',
+  per_firstName: '',
+  per_lastName: '',
   avatar: 'assets/images/avatars/profile.jpg',
   per_email: '',
   per_phone: '',
@@ -50,7 +50,7 @@ const defaultValues = {
  * Form Validation Schema
  */
 const schema = yup.object().shape({
-  per_first_name: yup.string().required('You must enter a name'),
+  per_firstName: yup.string().required('You must enter a name'),
 });
 
 function ContactEditDialog(props) {
@@ -69,21 +69,21 @@ function ContactEditDialog(props) {
   const name = watch('name');
   const avatar = watch('avatar');
   const contactFields = [
-    { icon: null, name: 'per_last_name', label: 'Last Name' },
+    { icon: null, name: 'per_lastName', label: 'Last Name' },
     { icon: 'phone', name: 'per_phone', label: 'Phone' },
     { icon: 'email', name: 'per_email', label: 'Email' },
     { icon: 'cake', name: 'per_birthday', label: '', type: 'date' },
     { icon: 'cake', name: 'school_year', label: 'School / Graduation Year', type: 'number' },
   ];
   const familyFields = [
-    { icon: 'account_circle', name: 'family.fam_family_name', label: 'Family Name' },
-    { icon: 'home', name: 'family.fam_family_address', label: 'Family Address' },
-    { icon: 'email', name: 'family.fam_family_email', label: 'Family Email' },
+    { icon: 'account_circle', name: 'family.fam_familyName', label: 'Family Name' },
+    { icon: 'home', name: 'family.fam_familyAddress', label: 'Family Address' },
+    { icon: 'email', name: 'family.fam_familyEmail', label: 'Family Email' },
   ];
 
   const familyMembersA = [
-    { per_first_name: 'Bob', per_last_name: 'Brown', per_family_role: 'Head' },
-    { per_first_name: 'Maryanne', per_last_name: 'Brown', per_family_role: 'Head' },
+    { per_firstName: 'Bob', per_lastName: 'Brown', per_familyRole: 'Head' },
+    { per_firstName: 'Maryanne', per_lastName: 'Brown', per_familyRole: 'Head' },
   ];
 
   const [ familyMembers, setFamilyMembers ] = useState(familyMembersA);
@@ -180,15 +180,15 @@ function ContactEditDialog(props) {
             </div>
             <Controller
               control={control}
-              name="per_first_name"
+              name="per_firstName"
               render={({ field }) => (
                 <TextField
                   {...field}
                   className="mb-24"
                   label="Name"
                   id="name"
-                  error={!!errors.per_first_name}
-                  helperText={errors?.per_first_name?.message}
+                  error={!!errors.per_firstName}
+                  helperText={errors?.per_firstName?.message}
                   variant="outlined"
                   required
                   fullWidth
@@ -228,7 +228,7 @@ function ContactEditDialog(props) {
             <Controller
               control={control}
               defaultValue={1}
-              name="per_family_role"
+              name="per_familyRole"
               render={({ field: { value, onChange } }) => (
                 <TextField
                   className="mb-24"
@@ -315,7 +315,7 @@ function ContactEditDialog(props) {
                   <ListItemAvatar>
                     <Avatar className="w-20 h-20" alt="contact avatar" src={avatar} />
                   </ListItemAvatar>
-                  <ListItemText primary={`${person.per_first_name} ${person.per_last_name}`} />
+                  <ListItemText primary={`${person.per_firstName} ${person.per_lastName}`} />
                       <ListItemText
                         secondary={
                           person.family_role_text
