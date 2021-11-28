@@ -49,7 +49,8 @@ export const updateContact = createAsyncThunk(
 export const removeContact = createAsyncThunk(
   'contactsApp/contacts/removeContact',
   async (contactId, { dispatch, getState }) => {
-    await axios.post('/api/contacts-app/remove-contact', { contactId });
+    console.log('delete')
+    await axios.delete('/api/contacts-app/removecontact/'+contactId.toString());
 
     return contactId;
   }

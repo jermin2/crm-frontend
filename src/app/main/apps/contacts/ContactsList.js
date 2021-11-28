@@ -128,7 +128,6 @@ function ContactsList(props) {
         data={filteredData}
         onRowClick={(ev, row) => {
           if (row) {
-            console.log(row.original)
             dispatch(openEditContactDialog(row.original));
           }
         }}
