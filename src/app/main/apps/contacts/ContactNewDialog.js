@@ -345,6 +345,11 @@ function ContactNewDialog(props) {
                     more..
                   </Button>
                 </div>
+                <div className="flex mx-4 p-2">
+                  <Button variant="outlined" style={{ borderRadius: '0px' }}>
+                    new
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

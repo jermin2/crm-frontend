@@ -13,6 +13,7 @@ export const getFamilies = createAsyncThunk(
       params: routeParams,
     });
     const data = await response.data;
+    //update the data with the person
     dispatch(getRoles());
     return { data, routeParams };
   }
@@ -23,7 +24,6 @@ export const getRoles = createAsyncThunk(
   async (routeParams, { getState }) => {
     const response = await axios.get('/api/contacts-app/familyRoles');
     const data = await response.data;
-    console.log("get roles", data);
     return { data };
   }
 );

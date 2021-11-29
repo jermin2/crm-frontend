@@ -16,6 +16,7 @@ import List from '@mui/material/List';
 
 import {
   openEditContactDialog,
+  openNewContactDialog,
   removeContact,
   toggleStarredContact,
   selectContacts,
@@ -31,13 +32,12 @@ const flexContainer = {
 
 function FamiliesList(props) {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectFamilies);
+  const contacts = useSelector(selectContacts);
   const families = useSelector(selectFamilies);
   const searchText = useSelector(({ contactsApp }) => contactsApp.contacts.searchText);
   const user = useSelector(({ contactsApp }) => contactsApp.user);
 
   const [filteredData, setFilteredData] = useState(null);
-
 
   const columns = useMemo(
     () => [
@@ -70,33 +70,45 @@ function FamiliesList(props) {
         accessor: 'family_members',
         width: 30,
         Cell: ({ row }) => {
+
+          const contactsList = useSelector(selectContacts);
           return (
             <List style={flexContainer}>
               {row.original.family_members
-                ? row.original.family_members.map((person, i) => (
-                    <ListItem disablePadding>
-                      <ListItemButton disablePadding className="p-0">
-                        <ListItemText
-                          primaryTypographyProps={{
-                            style: { fontSize: 'small', margin: 'auto', width: 'fit-content' },
+                ? row.original.family_members.map((person, i) => {
+                    const personData = contactsList.find((c) => c.id === person.id);
+                    person = { ...person, ...personData };
+                    return (
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          className="p-0"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            dispatch(openEditContactDialog(person));
                           }}
-                          secondaryTypographyProps={{
-                            style: { fontSize: 'small', textAlign: 'center', paddingTop: '5px' },
-                          }}
-                          primary={
-                            <ListItemAvatar>
-                              <Avatar
-                                className="w-25 h-25 m-auto"
-                                alt="contact avatar"
-                                src={person.avatar}
-                              />
-                            </ListItemAvatar>
-                          }
-                          secondary={person.per_firstName}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  ))
+                        >
+                          <ListItemText
+                            primaryTypographyProps={{
+                              style: { fontSize: 'small', margin: 'auto', width: 'fit-content' },
+                            }}
+                            secondaryTypographyProps={{
+                              style: { fontSize: 'small', textAlign: 'center', paddingTop: '5px' },
+                            }}
+                            primary={
+                              <ListItemAvatar>
+                                <Avatar
+                                  className="w-25 h-25 m-auto"
+                                  alt="contact avatar"
+                                  src={person.avatar}
+                                />
+                              </ListItemAvatar>
+                            }
+                            secondary={person.per_firstName}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })
                 : ''}
             </List>
           );
@@ -177,7 +189,7 @@ function FamiliesList(props) {
         data={filteredData}
         onRowClick={(ev, row) => {
           if (row) {
-            dispatch(openEditContactDialog(row.original));
+            dispatch(openNewContactDialog(row.original));
           }
         }}
       />

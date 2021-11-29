@@ -128,8 +128,6 @@ function ContactEditDialog(props) {
    */
   function onSubmit(data) {
     data.family.action = "update"
-    console.log({...contactDialog.data})
-    console.log(data)
     
     dispatch(updateContact({ ...contactDialog.data, ...data }));
     closeComposeDialog();
@@ -143,6 +141,7 @@ function ContactEditDialog(props) {
     closeComposeDialog();
   }
 
+  console.log("ContactEdit: ", props)
   return (
     <Dialog
       classes={{

@@ -70,16 +70,6 @@ function ContactsSidebarContent(props) {
             New Contact
           </Button>
         </div>
-        <div className="p-24">
-          <Button
-            variant="contained"
-            color="secondary"
-            className="w-full"
-            onClick={(ev) => dispatch(openNewContactDialog())}
-          >
-            New Family
-          </Button>
-        </div>
 
         <List className="pt-0 px-12">
           <StyledListItem
@@ -91,7 +81,7 @@ function ContactsSidebarContent(props) {
             <Icon className="list-item-icon text-16" color="action">
               people
             </Icon>
-            <ListItemText className="truncate" primary="All contacts" disableTypography />
+            <ListItemText className="truncate" primary="Person View" disableTypography />
           </StyledListItem>
 
           <StyledListItem
@@ -103,7 +93,7 @@ function ContactsSidebarContent(props) {
             <Icon className="list-item-icon text-16" color="action">
               people
             </Icon>
-            <ListItemText className="truncate" primary="Families List" disableTypography />
+            <ListItemText className="truncate" primary="Family View" disableTypography />
           </StyledListItem>
           
           <StyledListItem

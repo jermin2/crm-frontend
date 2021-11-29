@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { showMessage } from 'app/store/fuse/messageSlice';
 import { getUserData } from './userSlice';
 import { getFamilies } from './familiesSlice';
+
+
 
 axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_access_token');
 
@@ -26,7 +29,18 @@ export const addContact = createAsyncThunk(
     const data = await response.data;
     dispatch(getContacts());
     dispatch(getFamilies());
+    dispatch( 
+      showMessage({
+        message: "Contact Added",
+        autoHideDuration: 1000,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center'
+        },
+        variant: 'success'
 
+      })
+    )
     return data;
   }
 );
@@ -50,7 +64,18 @@ export const removeContact = createAsyncThunk(
   async (contactId, { dispatch, getState }) => {
     console.log('delete')
     await axios.delete('/api/contacts-app/removecontact/'+contactId.toString());
+    dispatch( 
+      showMessage({
+        message: "Contact Removed",
+        autoHideDuration: 1000,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center'
+        },
+        variant: 'warning'
 
+      })
+    )
     return contactId;
   }
 );

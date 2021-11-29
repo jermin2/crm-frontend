@@ -21,6 +21,8 @@ function ContactsList(props) {
   const searchText = useSelector(({ contactsApp }) => contactsApp.contacts.searchText);
   const user = useSelector(({ contactsApp }) => contactsApp.user);
 
+  console.log("Families List: ", contacts)
+
   const [filteredData, setFilteredData] = useState(null);
 
   const columns = useMemo(

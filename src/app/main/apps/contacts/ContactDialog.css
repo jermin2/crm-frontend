@@ -1,6 +1,6 @@
 .sub-container {
     display: flex;
-    width: 100%;
+    width: 50%;
     flex-grow: 1;
     flex-wrap: wrap;
 }
