@@ -24,7 +24,6 @@ export const addContact = createAsyncThunk(
   async (contact, { dispatch, getState }) => {
     const response = await axios.post('/api/contacts-app/add-contact', contact);
     const data = await response.data;
-    console.log("add response", data);
     dispatch(getContacts());
     dispatch(getFamilies());
 
@@ -82,6 +81,7 @@ export const toggleStarredContact = createAsyncThunk(
 export const toggleStarredContacts = createAsyncThunk(
   'contactsApp/contacts/toggleStarredContacts',
   async (contactIds, { dispatch, getState }) => {
+    console.log("toggle starred contacts")
     const response = await axios.post('/api/contacts-app/toggle-starred-contacts', { contactIds });
     const data = await response.data;
 

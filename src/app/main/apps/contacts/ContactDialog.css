@@ -30,3 +30,8 @@
     position:absolute;
     top: 0;
 }
+
+List {
+    display:inline-block;
+}
+

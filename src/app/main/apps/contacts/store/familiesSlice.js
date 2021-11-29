@@ -13,8 +13,6 @@ export const getFamilies = createAsyncThunk(
       params: routeParams,
     });
     const data = await response.data;
-    console.log("get families", data);
-    console.log("calling get roles")
     dispatch(getRoles());
     return { data, routeParams };
   }
@@ -53,7 +51,7 @@ const familiesSlice = createSlice({
     }
   }),
   reducers: {
-    setContactsSearchText: {
+    setFamiliesSearchText: {
       reducer: (state, action) => {
         state.searchText = action.payload;
       },

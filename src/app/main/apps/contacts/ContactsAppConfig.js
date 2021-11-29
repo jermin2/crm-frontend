@@ -18,6 +18,14 @@ const ContactsAppConfig = {
       path: '/apps/contacts',
       component: () => <Redirect to="/apps/contacts/all" />,
     },
+    {
+      path: '/apps/families/:id',
+      component: lazy(() => import('./ContactsApp')),
+    },
+    {
+      path: '/apps/families',
+      component: () => <Redirect to="/apps/families/all" />,
+    },
   ],
 };
 

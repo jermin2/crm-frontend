@@ -1,13 +1,14 @@
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import withReducer from 'app/store/withReducer';
 import { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useDeepCompareEffect } from '@fuse/hooks';
 import { styled } from '@mui/material/styles';
 import ContactNewDialog from './ContactNewDialog';
 import ContactEditDialog from './ContactEditDialog';
 import ContactsHeader from './ContactsHeader';
+import FamiliesList from './FamiliesList';
 import ContactsList from './ContactsList';
 import ContactsSidebarContent from './ContactsSidebarContent';
 import reducer from './store';
@@ -47,6 +48,9 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
 
 function ContactsApp(props) {
   const dispatch = useDispatch();
+  const mode = 'contacts';
+  // const mode = useSelector(getListMode)
+  const {match: {path}} = props;
 
   const pageLayout = useRef(null);
   const routeParams = useParams();
@@ -61,7 +65,7 @@ function ContactsApp(props) {
     <>
       <Root
         header={<ContactsHeader pageLayout={pageLayout} />}
-        content={<ContactsList />}
+        content={ path.startsWith("/apps/families") ? <FamiliesList /> : <ContactsList />}
         leftSidebarContent={<ContactsSidebarContent />}
         sidebarInner
         ref={pageLayout}
