@@ -31,8 +31,10 @@ import {
   updateContact,
   addContact,
   closeNewContactDialog,
-  closeEditContactDialog,
+  closeQuickContactDialog,
+  openEditContactDialog,
 } from './store/contactsSlice';
+import { openEditFamilyDialog } from './store/familiesSlice';
 
 const defaultValues = {
   id: '',
@@ -53,9 +55,9 @@ const schema = yup.object().shape({
   per_firstName: yup.string().required('You must enter a name'),
 });
 
-function ContactEditDialog(props) {
+function QuickContactDialog(props) {
   const dispatch = useDispatch();
-  const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.editContactDialog);
+  const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.quickContactDialog);
 
   const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
     mode: 'onChange',
@@ -86,7 +88,7 @@ function ContactEditDialog(props) {
     { per_firstName: 'Maryanne', per_lastName: 'Brown', per_familyRole: 'Head' },
   ];
 
-  const [ familyMembers, setFamilyMembers ] = useState(familyMembersA);
+  const [familyMembers, setFamilyMembers] = useState(familyMembersA);
 
   const familyRoles = useSelector(({ contactsApp }) => contactsApp.families.roles);
   /**
@@ -97,12 +99,11 @@ function ContactEditDialog(props) {
      * Dialog type: 'edit'
      */
     // PUT OTHER SETUP STUFF HERE
-    
+
     if (contactDialog.type === 'edit' && contactDialog.data) {
       reset({ ...contactDialog.data });
       setFamilyMembers(contactDialog.data.family.family_members);
     }
-    
   }, [contactDialog.data, contactDialog.type, reset]);
 
   /**
@@ -118,17 +119,15 @@ function ContactEditDialog(props) {
    * Close Dialog
    */
   function closeComposeDialog() {
-    return contactDialog.type === 'edit'
-      ? dispatch(closeEditContactDialog())
-      : dispatch(closeNewContactDialog());
+    dispatch(closeQuickContactDialog());
   }
 
   /**
    * Form Submit
    */
   function onSubmit(data) {
-    data.family.action = "update"
-    
+    data.family.action = 'update';
+
     dispatch(updateContact({ ...contactDialog.data, ...data }));
     closeComposeDialog();
   }
@@ -141,7 +140,6 @@ function ContactEditDialog(props) {
     closeComposeDialog();
   }
 
-  console.log("ContactEdit: ", props)
   return (
     <Dialog
       classes={{
@@ -197,14 +195,14 @@ function ContactEditDialog(props) {
           </div>
 
           {contactFields.map((contactField, i) => (
-            <div className="flex">
+            <div className="flex" key={i}>
               <div className="min-w-48 pt-20">
                 {contactField.icon ? <Icon color="action">{contactField.icon}</Icon> : <></>}
               </div>
               <Controller
                 control={control}
                 name={contactField.name}
-                defaultValue=''
+                defaultValue=""
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -272,16 +270,39 @@ function ContactEditDialog(props) {
           </div>
 
           <div className="flex">
-            <div className="min-w-48 pb-20">
-              <Typography variant="h6" color="inherit" className="pt-8">
+            <div className="min-w-48 pb-20 flex row">
+              <Typography variant="h6" color="inherit" className="pt-8 px-8">
                 Family
               </Typography>
+              <Button
+                variant="contained"
+                color="secondary"
+                className="p-3"
+                onClick={() => {
+                  dispatch(closeQuickContactDialog());
+                  dispatch(openEditFamilyDialog(contactDialog.data.family));
+                }}
+              >
+                Edit Family
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                className="p-3"
+                onClick={() => {
+                  console.log("contactdialogdata :", contactDialog.data)
+                  dispatch(closeQuickContactDialog());
+                  dispatch(openEditContactDialog(contactDialog.data));
+                }}
+              >
+                Change Family
+              </Button>
               <hr />
             </div>
           </div>
 
           {familyFields.map((familyField, i) => (
-            <div className="flex">
+            <div className="flex" key={i}>
               <div className="min-w-48 pt-20">
                 {familyField.icon ? <Icon color="action">{familyField.icon}</Icon> : <></>}
               </div>
@@ -298,6 +319,9 @@ function ContactEditDialog(props) {
                     type={familyField.type}
                     variant="outlined"
                     fullWidth
+                    InputProps={{
+                      readOnly: true,
+                    }}
                   />
                 )}
               />
@@ -308,22 +332,22 @@ function ContactEditDialog(props) {
             Members
           </Typography>
           <List>
-            {familyMembers && familyRoles ? familyMembers.map((person, i) => (
-              <ListItem disablePadding>
-                <ListItemButton>
-                  <ListItemAvatar>
-                    <Avatar className="w-20 h-20" alt="contact avatar" src={avatar} />
-                  </ListItemAvatar>
-                  <ListItemText primary={`${person.per_firstName} ${person.per_lastName}`} />
+            {familyMembers && familyRoles
+              ? familyMembers.map((person, i) => (
+                  <ListItem key={i} disablePadding>
+                    <ListItemButton>
+                      <ListItemAvatar>
+                        <Avatar className="w-20 h-20" alt="contact avatar" src={avatar} />
+                      </ListItemAvatar>
+                      <ListItemText primary={`${person.per_firstName} ${person.per_lastName}`} />
                       <ListItemText
-                        secondary={
-                          person.family_role_text
-                        }
+                        secondary={person.family_role_text}
                         className="pr-16 text-right"
                       />
-                </ListItemButton>
-              </ListItem>
-            )) : ''}
+                    </ListItemButton>
+                  </ListItem>
+                ))
+              : ''}
           </List>
         </DialogContent>
 
@@ -362,4 +386,4 @@ function ContactEditDialog(props) {
   );
 }
 
-export default ContactEditDialog;
+export default QuickContactDialog;

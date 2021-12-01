@@ -15,14 +15,14 @@ import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 
 import {
-  openEditContactDialog,
+  openQuickContactDialog,
   openNewContactDialog,
   removeContact,
   toggleStarredContact,
   selectContacts,
 } from './store/contactsSlice';
 
-import { selectFamilies } from './store/familiesSlice';
+import { selectFamilies,   openEditFamilyDialog, } from './store/familiesSlice';
 
 const flexContainer = {
   display: 'flex',
@@ -79,12 +79,12 @@ function FamiliesList(props) {
                     const personData = contactsList.find((c) => c.id === person.id);
                     person = { ...person, ...personData };
                     return (
-                      <ListItem disablePadding>
+                      <ListItem key={person.id} disablePadding>
                         <ListItemButton
                           className="p-0"
                           onClick={(ev) => {
                             ev.stopPropagation();
-                            dispatch(openEditContactDialog(person));
+                            dispatch(openQuickContactDialog(person));
                           }}
                         >
                           <ListItemText
@@ -189,7 +189,7 @@ function FamiliesList(props) {
         data={filteredData}
         onRowClick={(ev, row) => {
           if (row) {
-            dispatch(openNewContactDialog(row.original));
+            dispatch(openEditFamilyDialog(row.original));
           }
         }}
       />

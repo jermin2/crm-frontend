@@ -12,9 +12,19 @@ export const getContacts = createAsyncThunk(
   'contactsApp/contacts/getContacts',
   async (routeParams, { getState }) => {
     routeParams = routeParams || getState().contactsApp.contacts.routeParams;
-    const response = await axios.get('/api/contacts-app/contacts', {
-      params: routeParams,
-    });
+    const response = await axios.get('/api/contacts-app/contact/');
+    const data = await response.data;
+    console.log('gathered data', data)
+
+    return { data, routeParams };
+  }
+);
+
+export const getContact = createAsyncThunk(
+  'contactsApp/contacts/getContact',
+  async (id, routeParams, { getState }) => {
+    routeParams = routeParams || getState().contactsApp.contacts.routeParams;
+    const response = await axios.get(`/api/contacts-app/contact/${id}`);
     const data = await response.data;
     console.log('gathered data', data)
 
@@ -25,7 +35,7 @@ export const getContacts = createAsyncThunk(
 export const addContact = createAsyncThunk(
   'contactsApp/contacts/addContact',
   async (contact, { dispatch, getState }) => {
-    const response = await axios.post('/api/contacts-app/add-contact', contact);
+    const response = await axios.post('/api/contacts-app/contact/', contact);
     const data = await response.data;
     dispatch(getContacts());
     dispatch(getFamilies());
@@ -50,9 +60,10 @@ export const updateContact = createAsyncThunk(
   async (contact, { dispatch, getState }) => {
     
     const id = contact.id.toString();
-    const response = await axios.put('/api/contacts-app/update-contact/' + id , contact );
+    const response = await axios.put(`/api/contacts-app/contact/${id}/` , contact );
     const data = await response.data;
-
+    
+    dispatch(getFamilies());
     dispatch(getContacts());
 
     return data;
@@ -63,7 +74,7 @@ export const removeContact = createAsyncThunk(
   'contactsApp/contacts/removeContact',
   async (contactId, { dispatch, getState }) => {
     console.log('delete')
-    await axios.delete('/api/contacts-app/removecontact/'+contactId.toString());
+    await axios.delete(`/api/contacts-app/contact/${contactId}/`);
     dispatch( 
       showMessage({
         message: "Contact Removed",
@@ -159,16 +170,17 @@ const contactsSlice = createSlice({
   initialState: contactsAdapter.getInitialState({
     searchText: '',
     routeParams: {},
-    editContactDialog: {
+    quickContactDialog: {
       props: {
         open: false,
       },
       data: null,
     },
-    newContactDialog: {
+    contactDialog: {
       props: {
         open: false,
       },
+      data: null,
     },
   }),
   reducers: {
@@ -179,7 +191,7 @@ const contactsSlice = createSlice({
       prepare: (event) => ({ payload: event.target.value || '' }),
     },
     openNewContactDialog: (state, action) => {
-      state.newContactDialog = {
+      state.contactDialog = {
         type: 'new',
         props: {
           open: true,
@@ -187,7 +199,7 @@ const contactsSlice = createSlice({
       };
     },
     closeNewContactDialog: (state, action) => {
-      state.newContactDialog = {
+      state.contactDialog = {
         type: 'new',
         props: {
           open: false,
@@ -195,7 +207,7 @@ const contactsSlice = createSlice({
       };
     },
     openEditContactDialog: (state, action) => {
-      state.editContactDialog = {
+      state.contactDialog = {
         type: 'edit',
         props: {
           open: true,
@@ -204,7 +216,25 @@ const contactsSlice = createSlice({
       };
     },
     closeEditContactDialog: (state, action) => {
-      state.editContactDialog = {
+      state.contactDialog = {
+        type: 'edit',
+        props: {
+          open: false,
+        },
+        data: null,
+      };
+    },
+    openQuickContactDialog: (state, action) => {
+      state.quickContactDialog = {
+        type: 'edit',
+        props: {
+          open: true,
+        },
+        data: action.payload,
+      };
+    },
+    closeQuickContactDialog: (state, action) => {
+      state.quickContactDialog = {
         type: 'edit',
         props: {
           open: false,
@@ -234,6 +264,8 @@ export const {
   closeNewContactDialog,
   openEditContactDialog,
   closeEditContactDialog,
+  openQuickContactDialog,
+  closeQuickContactDialog,
 } = contactsSlice.actions;
 
 export default contactsSlice.reducer;

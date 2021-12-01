@@ -9,7 +9,7 @@ export const getFamilies = createAsyncThunk(
   async (routeParams, { dispatch, getState }) => {
 
     routeParams = routeParams || getState().contactsApp.families.routeParams;
-    const response = await axios.get('/api/contacts-app/familys', {
+    const response = await axios.get('/api/contacts-app/family/', {
       params: routeParams,
     });
     const data = await response.data;
@@ -22,9 +22,22 @@ export const getFamilies = createAsyncThunk(
 export const getRoles = createAsyncThunk(
   'contactsApp/families/getRoles',
   async (routeParams, { getState }) => {
-    const response = await axios.get('/api/contacts-app/familyRoles');
+    const response = await axios.get('/api/contacts-app/familyRole/');
     const data = await response.data;
     return { data };
+  }
+);
+
+export const updateFamily = createAsyncThunk(
+  'contactsApp/families/updateFamily',
+  async (family, { dispatch, getState }) => {
+    const id = family.id.toString();
+    const response = await axios.put(`/api/contacts-app/family/${id}/` , family );
+    const data = await response.data;
+
+    dispatch(getFamilies());
+
+    return data;
   }
 );
 
@@ -39,7 +52,7 @@ const familiesSlice = createSlice({
   initialState: familiesAdapter.getInitialState({
     searchText: '',
     routeParams: {},
-    contactDialog: {
+    familyDialog: {
       type: 'new',
       props: {
         open: false,
@@ -57,10 +70,26 @@ const familiesSlice = createSlice({
       },
       prepare: (event) => ({ payload: event.target.value || '' }),
     },
+    openEditFamilyDialog: (state, action) => {
+      state.familyDialog = {
+        type: 'edit',
+        props: {
+          open: true,
+        },
+        data: action.payload,
+      };
+    },
+    closeFamilyDialog: (state, action) => {
+      state.familyDialog = {
+        props: {
+          open: false,
+        },
+      };
+    },
 
   },
   extraReducers: {
-    // [updateContact.fulfilled]: contactsAdapter.upsertOne,
+    [updateFamily.fulfilled]: familiesAdapter.upsertOne, //need to handle creation of new people somehow
     // [addContact.fulfilled]: contactsAdapter.addOne,
     // [removeContacts.fulfilled]: (state, action) =>
     //   contactsAdapter.removeMany(state, action.payload),
@@ -79,12 +108,9 @@ const familiesSlice = createSlice({
   },
 });
 
-// export const {
-//   setContactsSearchText,
-//   openNewContactDialog,
-//   closeNewContactDialog,
-//   openEditContactDialog,
-//   closeEditContactDialog,
-// } = familiesSlice.actions;
+export const {
+  openEditFamilyDialog,
+  closeFamilyDialog,
+} = familiesSlice.actions;
 
 export default familiesSlice.reducer;

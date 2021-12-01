@@ -122,21 +122,12 @@ const EnhancedTable = ({ columns, data, onRowClick }) => {
               return (
                 <TableRow
                   {...row.getRowProps()}
+                  key={i}
                   onClick={(ev) => onRowClick(ev, row)}
                   className="truncate cursor-pointer"
                 >
                   {row.cells.map((cell) => {
                     if (cell.list) {
-                      return ( 
-                        <TableCell 
-                          {...cell.getCellProps()}
-                          className={clsx('p-4 md:p-12', cell.column.className)}
-                          >
-                            {cell.render('Cell')}
-                        </TableCell>
-                      )
-                    }
-                    
                       return (
                         <TableCell
                           {...cell.getCellProps()}
@@ -145,8 +136,17 @@ const EnhancedTable = ({ columns, data, onRowClick }) => {
                           {cell.render('Cell')}
                         </TableCell>
                       );
-                  
-                })}
+                    }
+
+                    return (
+                      <TableCell
+                        {...cell.getCellProps()}
+                        className={clsx('p-4 md:p-12', cell.column.className)}
+                      >
+                        {cell.render('Cell')}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               );
             })}

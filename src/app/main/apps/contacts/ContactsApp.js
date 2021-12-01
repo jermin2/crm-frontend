@@ -5,8 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useDeepCompareEffect } from '@fuse/hooks';
 import { styled } from '@mui/material/styles';
-import ContactNewDialog from './ContactNewDialog';
-import ContactEditDialog from './ContactEditDialog';
+import ContactDialog from './ContactDialog';
+import QuickContactDialog from './QuickContactDialog';
+import FamilyDialog from './FamilyDialog';
 import ContactsHeader from './ContactsHeader';
 import FamiliesList from './FamiliesList';
 import ContactsList from './ContactsList';
@@ -71,8 +72,9 @@ function ContactsApp(props) {
         ref={pageLayout}
         innerScroll
       />
-      <ContactNewDialog />
-      <ContactEditDialog />
+      <ContactDialog />
+      <QuickContactDialog />
+      <FamilyDialog />
     </>
   );
 }

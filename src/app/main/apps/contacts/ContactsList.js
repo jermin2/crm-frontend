@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ContactsMultiSelectMenu from './ContactsMultiSelectMenu';
 import ContactsTable from './ContactsTable';
 import {
-  openEditContactDialog,
+  openQuickContactDialog,
   removeContact,
   toggleStarredContact,
   selectContacts,
@@ -130,7 +130,7 @@ function ContactsList(props) {
         data={filteredData}
         onRowClick={(ev, row) => {
           if (row) {
-            dispatch(openEditContactDialog(row.original));
+            dispatch(openQuickContactDialog(row.original));
           }
         }}
       />

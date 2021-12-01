@@ -6,8 +6,8 @@
 }
 
 .field-container {
-    width: calc( 50% - 20px);
-    min-width: 300px;
+    width: calc( 25% - 20px);
+    min-width: 200px;
     display: flex;
     margin: 10px;
     flex-grow: 1;
@@ -35,3 +35,12 @@ List {
     display:inline-block;
 }
 
+.flex-container {
+    display: flex;
+    width: 100%;
+}
+.controller-field {
+    width: 100%;
+    flex-grow: 1;
+    padding: 0 10px;
+}
