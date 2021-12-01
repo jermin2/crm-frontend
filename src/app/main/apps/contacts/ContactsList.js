@@ -8,6 +8,7 @@ import { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ContactsMultiSelectMenu from './ContactsMultiSelectMenu';
 import ContactsTable from './ContactsTable';
+import DeleteButton from './ConfirmDelete';
 import {
   openQuickContactDialog,
   removeContact,
@@ -20,8 +21,6 @@ function ContactsList(props) {
   const contacts = useSelector(selectContacts);
   const searchText = useSelector(({ contactsApp }) => contactsApp.contacts.searchText);
   const user = useSelector(({ contactsApp }) => contactsApp.user);
-
-  console.log("Families List: ", contacts)
 
   const [filteredData, setFilteredData] = useState(null);
 
@@ -76,15 +75,11 @@ function ContactsList(props) {
                 <Icon>star_border</Icon>
               )}
             </IconButton>
-            <IconButton
-              onClick={(ev) => {
-                ev.stopPropagation();
-                dispatch(removeContact(row.original.id));
-              }}
-              size="large"
-            >
-              <Icon>delete</Icon>
-            </IconButton>
+            <DeleteButton 
+              dispatch={dispatch}
+              message="This will delete this person permanently and cannot be undone"
+              agreeAction={() => dispatch(removeContact(row.original.id))}
+            />
           </div>
         ),
       },

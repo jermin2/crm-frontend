@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { showMessage } from 'app/store/fuse/messageSlice';
 import { getUserData } from './userSlice';
 
 axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_access_token');
@@ -16,6 +17,27 @@ export const getFamilies = createAsyncThunk(
     //update the data with the person
     dispatch(getRoles());
     return { data, routeParams };
+  }
+);
+
+export const removeFamily = createAsyncThunk(
+  'contactsApp/contacts/removeFamily',
+  async (familyId, { dispatch, getState }) => {
+    console.log('delete')
+    await axios.delete(`/api/contacts-app/family/${familyId}/`);
+    dispatch( 
+      showMessage({
+        message: "Family Removed",
+        autoHideDuration: 1000,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center'
+        },
+        variant: 'warning'
+
+      })
+    )
+    return familyId;
   }
 );
 
@@ -93,7 +115,7 @@ const familiesSlice = createSlice({
     // [addContact.fulfilled]: contactsAdapter.addOne,
     // [removeContacts.fulfilled]: (state, action) =>
     //   contactsAdapter.removeMany(state, action.payload),
-    // [removeContact.fulfilled]: (state, action) => contactsAdapter.removeOne(state, action.payload),
+    [removeFamily.fulfilled]: (state, action) => familiesAdapter.removeOne(state, action.payload),
     [getFamilies.fulfilled]: (state, action) => {
       const { data, routeParams } = action.payload;
       familiesAdapter.setAll(state, data);

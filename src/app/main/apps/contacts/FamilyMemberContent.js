@@ -1,19 +1,25 @@
-import { Controller, useFieldArray } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
 
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 
 import { useSelector } from 'react-redux';
-import {useEffect} from 'react';
+import { useEffect } from 'react';
+
+import _ from '@lodash';
 
 import { selectContacts } from './store/contactsSlice';
 
-function FamilyMemberContent({ control, family }) {
-  const { fields, remove, append, replace } = useFieldArray({
+
+function FamilyMemberContent({ family, control, formState }) {
+
+  const { fields, append, replace } = useFieldArray({
     control,
     name: `family_members`,
   });
+
+  const { isValid, dirtyFields, errors } = formState;
 
   const familyRoles = useSelector(({ contactsApp }) => contactsApp.families.roles);
   const contacts = useSelector(selectContacts);
@@ -27,36 +33,29 @@ function FamilyMemberContent({ control, family }) {
     per_phone: '',
     per_birthday: '',
     person_id: '-1',
-  }
+  };
 
   useEffect(() => {
-    if(!family) return;
-    const updatedFamilyMembers = family.family_members.map( (person) => {
-        return contacts.find( (c) => c.id == person.id)
-    })
+    if (!family) return;
+    const updatedFamilyMembers = family.family_members.map((person) => {
+      return contacts.find((c) => c.id === person.id);
+    });
 
-    replace(updatedFamilyMembers)
-
-  }, [family]);
+    replace(updatedFamilyMembers);
+  }, [family, contacts]);
 
   return (
     <div className="flex w-100 flex-col">
       {fields.map((item, k) => {
         return (
           <div className="flex w-100  flex-wrap row" key={k}>
-
             <div className="hidden">
               <Controller
                 control={control}
                 name={`family_members[${k}].person_id`}
                 defaultValue={item.person_id}
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="First Name"
-                    variant="outlined"
-                    readOnly
-                  />
+                  <TextField {...field} label="First Name" variant="outlined" readOnly />
                 )}
               />
             </div>
@@ -155,16 +154,15 @@ function FamilyMemberContent({ control, family }) {
           </div>
         );
       })}
-    
+
       <div className="px-16">
         <Button
-            variant="contained"
-            style={{ width: 'fit-content'}}
-            onClick={() =>
-            append(defaultValues)
-            }
+          variant="contained"
+          style={{ width: 'fit-content' }}
+          onClick={() => append(defaultValues)}
+          disabled={_.isEmpty(dirtyFields) || !isValid}
         >
-            Add new person
+          Add new person
         </Button>
       </div>
     </div>

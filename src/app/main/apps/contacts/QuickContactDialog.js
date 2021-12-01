@@ -1,4 +1,3 @@
-import FuseUtils from '@fuse/utils/FuseUtils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
@@ -7,7 +6,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Icon from '@mui/material/Icon';
-import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -17,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 
@@ -25,12 +22,11 @@ import MenuItem from '@mui/material/MenuItem';
 
 import _ from '@lodash';
 import * as yup from 'yup';
+import DeleteButton from './ConfirmDelete';
 
 import {
   removeContact,
   updateContact,
-  addContact,
-  closeNewContactDialog,
   closeQuickContactDialog,
   openEditContactDialog,
 } from './store/contactsSlice';
@@ -275,9 +271,9 @@ function QuickContactDialog(props) {
                 Family
               </Typography>
               <Button
-                variant="contained"
-                color="secondary"
-                className="p-3"
+                variant="outlined"
+                color="primary"
+                className="px-5 mx-5 rounded"
                 onClick={() => {
                   dispatch(closeQuickContactDialog());
                   dispatch(openEditFamilyDialog(contactDialog.data.family));
@@ -286,11 +282,10 @@ function QuickContactDialog(props) {
                 Edit Family
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
                 color="secondary"
-                className="p-3"
+                className="px-5 mx-5 rounded"
                 onClick={() => {
-                  console.log("contactdialogdata :", contactDialog.data)
                   dispatch(closeQuickContactDialog());
                   dispatch(openEditContactDialog(contactDialog.data));
                 }}
@@ -376,9 +371,11 @@ function QuickContactDialog(props) {
                 Save
               </Button>
             </div>
-            <IconButton onClick={handleRemove} size="large">
-              <Icon>delete</Icon>
-            </IconButton>
+            <DeleteButton 
+              dispatch={dispatch}
+              message="This will delete this person permanently and cannot be undone"
+              agreeAction={() => dispatch(removeContact(row.original.id))}
+            />
           </DialogActions>
         )}
       </form>

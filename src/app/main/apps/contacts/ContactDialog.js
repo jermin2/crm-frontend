@@ -174,7 +174,7 @@ function ContactDialog(props) {
     dispatch(removeContact(id));
     closeComposeDialog();
   }
-  console.log(contactDialog.props);
+
   return (
     <Dialog
       classes={{

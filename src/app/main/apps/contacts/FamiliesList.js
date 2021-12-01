@@ -6,23 +6,23 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ContactsMultiSelectMenu from './ContactsMultiSelectMenu';
-import ContactsTable from './ContactsTable';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
+import ContactsMultiSelectMenu from './ContactsMultiSelectMenu';
+import ContactsTable from './ContactsTable';
+import DeleteButton from './ConfirmDelete';
 
 import {
   openQuickContactDialog,
-  openNewContactDialog,
   removeContact,
   toggleStarredContact,
   selectContacts,
 } from './store/contactsSlice';
 
-import { selectFamilies,   openEditFamilyDialog, } from './store/familiesSlice';
+import { selectFamilies, openEditFamilyDialog, removeFamily } from './store/familiesSlice';
 
 const flexContainer = {
   display: 'flex',
@@ -135,15 +135,11 @@ function FamiliesList(props) {
                 <Icon>star_border</Icon>
               )}
             </IconButton>
-            <IconButton
-              onClick={(ev) => {
-                ev.stopPropagation();
-                dispatch(removeContact(row.original.id));
-              }}
-              size="large"
-            >
-              <Icon>delete</Icon>
-            </IconButton>
+            <DeleteButton 
+              dispatch={dispatch}
+              message="This will delete the family and any people in the family and cannot be undone"
+              agreeAction={() => dispatch(removeFamily(row.original.id))}
+            />
           </div>
         ),
       },
@@ -198,3 +194,4 @@ function FamiliesList(props) {
 }
 
 export default FamiliesList;
+
