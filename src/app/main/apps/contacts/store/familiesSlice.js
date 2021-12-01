@@ -3,6 +3,8 @@ import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import { getUserData } from './userSlice';
 
+import { getContacts } from './contactsSlice'
+
 axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_access_token');
 
 export const getFamilies = createAsyncThunk(
@@ -15,7 +17,6 @@ export const getFamilies = createAsyncThunk(
     });
     const data = await response.data;
     //update the data with the person
-    dispatch(getRoles());
     return { data, routeParams };
   }
 );
@@ -57,8 +58,7 @@ export const updateFamily = createAsyncThunk(
     const response = await axios.put(`/api/contacts-app/family/${id}/` , family );
     const data = await response.data;
 
-    dispatch(getFamilies());
-
+    dispatch(getContacts());
     return data;
   }
 );
@@ -111,7 +111,7 @@ const familiesSlice = createSlice({
 
   },
   extraReducers: {
-    [updateFamily.fulfilled]: familiesAdapter.upsertOne, //need to handle creation of new people somehow
+    [updateFamily.fulfilled]: familiesAdapter.upsertOne,
     // [addContact.fulfilled]: contactsAdapter.addOne,
     // [removeContacts.fulfilled]: (state, action) =>
     //   contactsAdapter.removeMany(state, action.payload),

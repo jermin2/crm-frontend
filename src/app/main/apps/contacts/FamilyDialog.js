@@ -3,8 +3,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Icon from '@mui/material/Icon';
-import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -17,14 +15,28 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FamilyMemberContent from './FamilyMemberContent';
 
+import DeleteButton from './ConfirmDelete';
+
 import './ContactDialog.css';
 
 import { selectContacts, removeContact } from './store/contactsSlice';
 
-import { selectFamilies, closeFamilyDialog, updateFamily } from './store/familiesSlice';
+import {
+  selectFamilies,
+  closeFamilyDialog,
+  updateFamily,
+  removeFamily,
+} from './store/familiesSlice';
+
+const defaultValues = {
+
+  family_members:[{
+    per_firstName: '',
+    per_lastName: ''
+  }]
 
 
-const defaultValues = {};
+};
 
 /**
  * Form Validation Schema
@@ -44,8 +56,9 @@ function FamilyDialog(props) {
   const familyRoles = useSelector(({ contactsApp }) => contactsApp.families.roles);
   const familyDialog = useSelector(({ contactsApp }) => contactsApp.families.familyDialog);
 
-  const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
+  const { control, watch, register, reset, handleSubmit, formState, getValues } = useForm({
     mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema),
   });
@@ -55,6 +68,7 @@ function FamilyDialog(props) {
   const id = watch('id');
   const name = watch('name');
   const avatar = watch('avatar');
+  const family_members = watch('family_members');
 
   const familyFields = [
     { icon: 'account_circle', name: 'fam_familyName', label: 'Family Name', type: 'text' },
@@ -108,7 +122,6 @@ function FamilyDialog(props) {
     // save changes to family
     data.action = 'update';
     dispatch(updateFamily(data));
-
     closeComposeDialog();
   }
 
@@ -165,7 +178,7 @@ function FamilyDialog(props) {
           </div>
         </DialogContent>
 
-        <FamilyMemberContent control={control} formState={formState} family={familyDialog.data} />
+        <FamilyMemberContent control={control} formState={formState} family={familyDialog.data} dispatch={dispatch}/>
 
         {familyDialog.type === 'new' ? (
           <DialogActions className="justify-between p-4 pb-16">
@@ -192,9 +205,14 @@ function FamilyDialog(props) {
                 Save
               </Button>
             </div>
-            <IconButton onClick={handleRemove} size="large">
-              <Icon>delete</Icon>
-            </IconButton>
+            <DeleteButton 
+              dispatch={dispatch}
+              message="This will delete the family and any people in the family and cannot be undone"
+              agreeAction={() => {
+                dispatch(removeFamily(familyDialog.data.id));
+                dispatch(closeFamilyDialog());
+              }}
+            />
           </DialogActions>
         )}
       </form>

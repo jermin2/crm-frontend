@@ -4,18 +4,15 @@ import { showMessage } from 'app/store/fuse/messageSlice';
 import { getUserData } from './userSlice';
 import { getFamilies } from './familiesSlice';
 
-
-
 axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_access_token');
 
 export const getContacts = createAsyncThunk(
   'contactsApp/contacts/getContacts',
-  async (routeParams, { getState }) => {
+  async (routeParams, { dispatch, getState }) => {
     routeParams = routeParams || getState().contactsApp.contacts.routeParams;
     const response = await axios.get('/api/contacts-app/contact/');
     const data = await response.data;
-    console.log('gathered data', data)
-
+    dispatch(getFamilies());
     return { data, routeParams };
   }
 );
@@ -26,7 +23,6 @@ export const getContact = createAsyncThunk(
     routeParams = routeParams || getState().contactsApp.contacts.routeParams;
     const response = await axios.get(`/api/contacts-app/contact/${id}`);
     const data = await response.data;
-    console.log('gathered data', data)
 
     return { data, routeParams };
   }
@@ -38,19 +34,18 @@ export const addContact = createAsyncThunk(
     const response = await axios.post('/api/contacts-app/contact/', contact);
     const data = await response.data;
     dispatch(getContacts());
-    dispatch(getFamilies());
-    dispatch( 
+
+    dispatch(
       showMessage({
-        message: "Contact Added",
+        message: 'Contact Added',
         autoHideDuration: 1000,
         anchorOrigin: {
           vertical: 'top',
-          horizontal: 'center'
+          horizontal: 'center',
         },
-        variant: 'success'
-
+        variant: 'success',
       })
-    )
+    );
     return data;
   }
 );
@@ -58,12 +53,10 @@ export const addContact = createAsyncThunk(
 export const updateContact = createAsyncThunk(
   'contactsApp/contacts/updateContact',
   async (contact, { dispatch, getState }) => {
-    
     const id = contact.id.toString();
-    const response = await axios.put(`/api/contacts-app/contact/${id}/` , contact );
+    const response = await axios.put(`/api/contacts-app/contact/${id}/`, contact);
     const data = await response.data;
-    
-    dispatch(getFamilies());
+
     dispatch(getContacts());
 
     return data;
@@ -73,20 +66,20 @@ export const updateContact = createAsyncThunk(
 export const removeContact = createAsyncThunk(
   'contactsApp/contacts/removeContact',
   async (contactId, { dispatch, getState }) => {
-    console.log('delete')
+    console.log('delete');
     await axios.delete(`/api/contacts-app/contact/${contactId}/`);
-    dispatch( 
+    dispatch(getContacts());
+    dispatch(
       showMessage({
-        message: "Contact Removed",
+        message: 'Contact Removed',
         autoHideDuration: 1000,
         anchorOrigin: {
           vertical: 'top',
-          horizontal: 'center'
+          horizontal: 'center',
         },
-        variant: 'warning'
-
+        variant: 'warning',
       })
-    )
+    );
     return contactId;
   }
 );
@@ -117,7 +110,7 @@ export const toggleStarredContact = createAsyncThunk(
 export const toggleStarredContacts = createAsyncThunk(
   'contactsApp/contacts/toggleStarredContacts',
   async (contactIds, { dispatch, getState }) => {
-    console.log("toggle starred contacts")
+    console.log('toggle starred contacts');
     const response = await axios.post('/api/contacts-app/toggle-starred-contacts', { contactIds });
     const data = await response.data;
 
@@ -182,6 +175,12 @@ const contactsSlice = createSlice({
       },
       data: null,
     },
+    extraDialog: {
+      props: {
+        open: false,
+      },
+      data: null,
+    }
   }),
   reducers: {
     setContactsSearchText: {
@@ -242,6 +241,24 @@ const contactsSlice = createSlice({
         data: null,
       };
     },
+    openExtraDialog: (state, action) => {
+      state.extraDialog = {
+        type: 'edit',
+        props: {
+          open: true,
+        },
+        data: action.payload,
+      };
+    },
+    closeExtraDialog: (state, action) => {
+      state.extraDialog = {
+        type: 'new',
+        props: {
+          open: false,
+        },
+        data: null,
+      };
+    },
   },
   extraReducers: {
     [updateContact.fulfilled]: contactsAdapter.upsertOne,
@@ -266,6 +283,8 @@ export const {
   closeEditContactDialog,
   openQuickContactDialog,
   closeQuickContactDialog,
+  openExtraDialog,
+  closeExtraDialog,
 } = contactsSlice.actions;
 
 export default contactsSlice.reducer;

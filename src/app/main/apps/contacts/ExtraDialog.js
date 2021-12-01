@@ -9,30 +9,20 @@ import Icon from '@mui/material/Icon';
 import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 
 import MenuItem from '@mui/material/MenuItem';
 
 import _ from '@lodash';
 import * as yup from 'yup';
-import DeleteButton from './ConfirmDelete';
 
 import {
   removeContact,
-  updateContact,
-  closeQuickContactDialog,
-  openEditContactDialog,
-  openQuickContactDialog,
+  closeExtraDialog,
   selectContacts,
 } from './store/contactsSlice';
-import { openEditFamilyDialog } from './store/familiesSlice';
 
 const defaultValues = {
   id: '',
@@ -43,6 +33,7 @@ const defaultValues = {
   per_phone: '',
   per_birthday: '',
   school_year: '',
+  per_familyRole: 5,
   notes: '',
 };
 
@@ -53,9 +44,9 @@ const schema = yup.object().shape({
   per_firstName: yup.string().required('You must enter a name'),
 });
 
-function QuickContactDialog(props) {
+function ExtraDialog(props) {
   const dispatch = useDispatch();
-  const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.quickContactDialog);
+  const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.extraDialog);
   const contacts = useSelector(selectContacts);
 
   const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
@@ -76,18 +67,6 @@ function QuickContactDialog(props) {
     { icon: 'cake', name: 'per_birthday', label: '', type: 'date' },
     { icon: 'cake', name: 'school_year', label: 'School / Graduation Year', type: 'number' },
   ];
-  const familyFields = [
-    { icon: 'account_circle', name: 'family.fam_familyName', label: 'Family Name' },
-    { icon: 'home', name: 'family.fam_familyAddress', label: 'Family Address' },
-    { icon: 'email', name: 'family.fam_familyEmail', label: 'Family Email' },
-  ];
-
-  const familyMembersA = [
-    { per_firstName: 'Bob', per_lastName: 'Brown', per_familyRole: 'Head' },
-    { per_firstName: 'Maryanne', per_lastName: 'Brown', per_familyRole: 'Head' },
-  ];
-
-  const [familyMembers, setFamilyMembers] = useState(familyMembersA);
 
   const familyRoles = useSelector(({ contactsApp }) => contactsApp.families.roles);
   /**
@@ -98,18 +77,21 @@ function QuickContactDialog(props) {
      * Dialog type: 'edit'
      */
     if (contactDialog.type === 'edit' && contactDialog.data) {
-      const contactData = contacts.find( (c) => c.id === contactDialog.data.id)
-      reset({ ...contactData });
-      setFamilyMembers(contactDialog.data.family.family_members);
+      reset({ ...defaultValues, ...contactDialog.data });
+    } else {
+      reset({...defaultValues})
     }
-  }, [contactDialog.data, contactDialog.type, reset]);
+  }, [ reset]);
 
   /**
    * On Dialog Open
    */
   useEffect(() => {
     if (contactDialog.props.open) {
-      initDialog();
+      if(contactDialog.data)
+        reset({...defaultValues,...contactDialog.data})
+      else
+        reset({...defaultValues})
     }
   }, [contactDialog.props.open, initDialog]);
 
@@ -117,16 +99,14 @@ function QuickContactDialog(props) {
    * Close Dialog
    */
   function closeComposeDialog() {
-    dispatch(closeQuickContactDialog());
+    dispatch(closeExtraDialog());
   }
 
   /**
    * Form Submit
    */
-  function onSubmit(data) {
-    data.family.action = 'update';
-
-    dispatch(updateContact({ ...contactDialog.data, ...data }));
+  function onSubmit(data, e) {
+    props.handleExtraDialogSubmit(data);
     closeComposeDialog();
   }
 
@@ -266,127 +246,22 @@ function QuickContactDialog(props) {
               )}
             />
           </div>
-
-          <div className="flex">
-            <div className="min-w-48 pb-20 flex row">
-              <Typography variant="h6" color="inherit" className="pt-8 px-8">
-                Family
-              </Typography>
-              <Button
-                variant="outlined"
-                color="primary"
-                className="px-5 mx-5 rounded"
-                onClick={() => {
-                  dispatch(closeQuickContactDialog());
-                  dispatch(openEditFamilyDialog(contactDialog.data.family));
-                }}
-              >
-                Edit Family
-              </Button>
-              <Button
-                variant="outlined"
-                color="secondary"
-                className="px-5 mx-5 rounded"
-                onClick={() => {
-                  dispatch(closeQuickContactDialog());
-                  dispatch(openEditContactDialog(contactDialog.data));
-                }}
-              >
-                Change Family
-              </Button>
-              <hr />
-            </div>
-          </div>
-
-          {familyFields.map((familyField, i) => (
-            <div className="flex" key={i}>
-              <div className="min-w-48 pt-20">
-                {familyField.icon ? <Icon color="action">{familyField.icon}</Icon> : <></>}
-              </div>
-              <Controller
-                control={control}
-                name={familyField.name}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    className="mb-24"
-                    label={familyField.label}
-                    id={familyField.name}
-                    type={familyField.type}
-                    variant="outlined"
-                    fullWidth
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                )}
-              />
-            </div>
-          ))}
-
-          <Typography variant="subtitle1" color="inherit">
-            Members
-          </Typography>
-          <List>
-            {familyMembers && familyRoles
-              ? familyMembers.map((person, i) => (
-                  <ListItem key={i} disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        dispatch(openEditContactDialog(person));
-                      }}
-                    >
-                      <ListItemAvatar>
-                        <Avatar className="w-20 h-20" alt="contact avatar" src={avatar} />
-                      </ListItemAvatar>
-                      <ListItemText primary={`${person.per_firstName} ${person.per_lastName}`} />
-                      <ListItemText
-                        secondary={person.family_role_text}
-                        className="pr-16 text-right"
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ))
-              : ''}
-          </List>
         </DialogContent>
-
-        {contactDialog.type === 'new' ? (
-          <DialogActions className="justify-between p-4 pb-16">
-            <div className="px-16">
-              <Button
-                variant="contained"
-                color="secondary"
-                type="submit"
-                disabled={_.isEmpty(dirtyFields) || !isValid}
-              >
-                Add
-              </Button>
-            </div>
-          </DialogActions>
-        ) : (
-          <DialogActions className="justify-between p-4 pb-16">
-            <div className="px-16">
-              <Button
-                variant="contained"
-                color="secondary"
-                type="submit"
-                disabled={_.isEmpty(dirtyFields) || !isValid}
-              >
-                Save
-              </Button>
-            </div>
-            <DeleteButton 
-              dispatch={dispatch}
-              message="This will delete this person permanently and cannot be undone"
-              agreeAction={() => { dispatch(removeContact(contactDialog.data.id)); dispatch(closeQuickContactDialog())} }
-            />
-          </DialogActions>
-        )}
+        <DialogActions className="justify-between p-4 pb-16">
+          <div className="px-16">
+            <Button
+              variant="contained"
+              color="secondary"
+              // type="submit"
+              onClick={handleSubmit(onSubmit)}
+            >
+              Close
+            </Button>
+          </div>
+        </DialogActions>
       </form>
     </Dialog>
   );
 }
 
-export default QuickContactDialog;
+export default ExtraDialog;

@@ -5,8 +5,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Icon from '@mui/material/Icon';
-import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -20,9 +18,10 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 import MenuItem from '@mui/material/MenuItem';
-
 import _ from '@lodash';
 import * as yup from 'yup';
+import ExtraDialog from './ExtraDialog';
+import DeleteButton from './ConfirmDelete'
 
 import './ContactDialog.css';
 
@@ -33,6 +32,7 @@ import {
   closeNewContactDialog,
   closeEditContactDialog,
   selectContacts,
+  openExtraDialog,
 } from './store/contactsSlice';
 
 import { selectFamilies } from './store/familiesSlice';
@@ -50,6 +50,8 @@ const defaultValues = {
   per_email: '',
   per_phone: '',
   school_year: '',
+  per_familyRole: '5',
+  family: { id: '', addFamily: 'false' },
 };
 
 /**
@@ -57,14 +59,12 @@ const defaultValues = {
  */
 const schema = yup.object().shape({
   per_firstName: yup.string().required('You must enter a name'),
-  // existingFamily: yup.string().when('addFamily', {
-  //   is: 'false',
-  //   then: yup.string().required('You must select an existing family'),
-  // }),
-  // fam_name: yup.string().when('addFamily', {
-  //   is: 'true',
-  //   then: yup.string().required('You must select enter a family name'),
-  // }),
+  family: yup.object().when('addFamily',{
+    is: 'false',
+    then: yup.object().shape({
+      id: yup.string().required("Must enter family name")
+    })
+  })
 });
 
 function ContactDialog(props) {
@@ -97,11 +97,12 @@ function ContactDialog(props) {
   ];
 
   const familyMembers = [
-    { per_firstName: 'Bobbby', last_name: 'Brown', family_role: 'Head' },
-    { per_firstName: 'Maryanne', last_name: 'Brown', family_role: 'Head' },
+    { per_firstName: 'Bobbby', last_name: 'Brown', per_familyRole: 'Head' },
+    { per_firstName: 'Maryanne', last_name: 'Brown', per_familyRole: 'Head' },
   ];
 
   const [showCreateFamily, setShowCreateFamily] = useState(false);
+  const [personData, setPersonData] = useState(defaultValues);
 
   /**
    * Initialize Dialog with Data
@@ -117,9 +118,11 @@ function ContactDialog(props) {
         ...defaultValues,
         id: FuseUtils.generateGUID(),
       });
+      setPersonData(defaultValues);
     } else if (contactDialog.type === 'edit' ){
       // load contact information
       const contactData = contacts.find( (c) => c.id === contactDialog.data.person_id)
+      setPersonData(contactData);
       reset({
         ...defaultValues,
         ...contactData,
@@ -154,7 +157,6 @@ function ContactDialog(props) {
     if(data.family.addFamily==="true"){
       data.family.id = "";
       data.family.action = "create"
-      console.log("removed family id")
     } else {
       data.family.action = "fetch"
     }
@@ -173,6 +175,10 @@ function ContactDialog(props) {
   function handleRemove() {
     dispatch(removeContact(id));
     closeComposeDialog();
+  }
+
+  function handleExtraDialogSubmit(data){
+    reset({...defaultValues, ...data})
   }
 
   return (
@@ -260,69 +266,6 @@ function ContactDialog(props) {
                     />
                   )}
                 />
-                {/* <div className="date-field">
-                  <Controller
-                    control={control}
-                    name="per_day_of_birth"
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Day"
-                        name="dayOfBirth"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        variant="outlined"
-                        fullWidth
-                      />
-                    )}
-                  />
-                </div>
-
-                <div className="date-field mx-4">
-                  <Controller
-                    control={control}
-                    name="per_month_of_birth"
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Month"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        select
-                        variant="outlined"
-                        fullWidth
-                        type="number"
-                      >
-                        {months.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    )}
-                  />
-                </div>
-
-                <div className="date-field">
-                  <Controller
-                    control={control}
-                    name="per_year_of_birth"
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Year"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        variant="outlined"
-                        fullWidth
-                        type="number"
-                      />
-                    )}
-                  />
-                </div> */}
               </div>
 
               <div className="field-container">
@@ -353,13 +296,8 @@ function ContactDialog(props) {
                 />
 
                 <div className="flex mx-4 p-2">
-                  <Button variant="outlined" style={{ borderRadius: '0px' }}>
+                  <Button variant="outlined" style={{ borderRadius: '0px' }} onClick={()=>dispatch(openExtraDialog(personData))}>
                     more..
-                  </Button>
-                </div>
-                <div className="flex mx-4 p-2">
-                  <Button variant="outlined" style={{ borderRadius: '0px' }}>
-                    new
                   </Button>
                 </div>
               </div>
@@ -484,12 +422,17 @@ function ContactDialog(props) {
                 Save
               </Button>
             </div>
-            <IconButton onClick={handleRemove} size="large">
-              <Icon>delete</Icon>
-            </IconButton>
+            <DeleteButton 
+              dispatch={dispatch}
+              message="This will delete this person forever and cannot be undone"
+              agreeAction={() => {
+                handleRemove();
+              }}
+            />
           </DialogActions>
         )}
       </form>
+      <ExtraDialog handleExtraDialogSubmit={handleExtraDialogSubmit}/>
     </Dialog>
   );
 }

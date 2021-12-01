@@ -9,12 +9,13 @@ import { useEffect } from 'react';
 
 import _ from '@lodash';
 
-import { selectContacts } from './store/contactsSlice';
+import { selectContacts, openExtraDialog } from './store/contactsSlice';
 
+import ExtraDialog from './ExtraDialog';
 
-function FamilyMemberContent({ family, control, formState }) {
+function FamilyMemberContent({ family, control, formState, dispatch }) {
 
-  const { fields, append, replace } = useFieldArray({
+  const { fields, append, replace, update, insert, remove } = useFieldArray({
     control,
     name: `family_members`,
   });
@@ -44,11 +45,18 @@ function FamilyMemberContent({ family, control, formState }) {
     replace(updatedFamilyMembers);
   }, [family, contacts]);
 
+  function handleSubmit(data){
+    // This is hacky, but can't get update to work so it'll have to do for now
+    remove(data.k)
+    insert(data.k, data);
+    //update(data.k, data);
+  }
+
   return (
     <div className="flex w-100 flex-col">
       {fields.map((item, k) => {
         return (
-          <div className="flex w-100  flex-wrap row" key={k}>
+          <div className="flex w-100  flex-wrap row" key={item.id}>
             <div className="hidden">
               <Controller
                 control={control}
@@ -144,9 +152,8 @@ function FamilyMemberContent({ family, control, formState }) {
                   </TextField>
                 )}
               />
-
               <div className="flex mx-4 p-2">
-                <Button variant="outlined" style={{ borderRadius: '0px' }}>
+                <Button variant="outlined" style={{ borderRadius: '0px' }} onClick={()=>dispatch(openExtraDialog({...item, k}))}>
                   more..
                 </Button>
               </div>
@@ -154,7 +161,6 @@ function FamilyMemberContent({ family, control, formState }) {
           </div>
         );
       })}
-
       <div className="px-16">
         <Button
           variant="contained"
@@ -165,6 +171,7 @@ function FamilyMemberContent({ family, control, formState }) {
           Add new person
         </Button>
       </div>
+      <ExtraDialog handleExtraDialogSubmit={handleSubmit}/>
     </div>
   );
 }

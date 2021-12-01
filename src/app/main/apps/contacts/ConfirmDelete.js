@@ -23,7 +23,7 @@ function DeleteButton({dispatch, message, agreeAction}) {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => { dispatch(closeDialog());  }} color="primary">
+              <Button onClick={() => dispatch(closeDialog())} color="primary">
                 Disagree
               </Button>
               <Button onClick={() => { agreeAction(); dispatch(closeDialog());} } color="primary" autoFocus>
