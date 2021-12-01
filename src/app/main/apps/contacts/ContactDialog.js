@@ -21,7 +21,7 @@ import MenuItem from '@mui/material/MenuItem';
 import _ from '@lodash';
 import * as yup from 'yup';
 import ExtraDialog from './ExtraDialog';
-import DeleteButton from './ConfirmDelete'
+import DeleteButton from './ConfirmDelete';
 
 import './ContactDialog.css';
 
@@ -36,11 +36,6 @@ import {
 } from './store/contactsSlice';
 
 import { selectFamilies } from './store/familiesSlice';
-
-const months = Array.from({ length: 12 }, (item, i) => {
-  return { label: new Date(0, i).toLocaleString('en-US', { month: 'long' }), value: i + 1 };
-});
-const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
 const defaultValues = {
   id: '',
@@ -59,12 +54,12 @@ const defaultValues = {
  */
 const schema = yup.object().shape({
   per_firstName: yup.string().required('You must enter a name'),
-  family: yup.object().when('addFamily',{
+  family: yup.object().when('addFamily', {
     is: 'false',
     then: yup.object().shape({
-      id: yup.string().required("Must enter family name")
-    })
-  })
+      id: yup.string().required('Must enter family name'),
+    }),
+  }),
 });
 
 function ContactDialog(props) {
@@ -91,14 +86,19 @@ function ContactDialog(props) {
     { name: 'birthday', label: 'Birthday', type: 'date' },
   ];
   const familyFields = [
-    { icon: 'account_circle', name: 'family.new.fam_familyName', label: 'Family Name', type:'text'},
+    {
+      icon: 'account_circle',
+      name: 'family.new.fam_familyName',
+      label: 'Family Name',
+      type: 'text',
+    },
     { icon: 'home', name: 'family.new.fam_familyAddress', label: 'Family Address (Optional)' },
-    { icon: 'email', name: 'family.new.fam_familyEmail', label: 'Family Email (Optional)', type:'email' },
-  ];
-
-  const familyMembers = [
-    { per_firstName: 'Bobbby', last_name: 'Brown', per_familyRole: 'Head' },
-    { per_firstName: 'Maryanne', last_name: 'Brown', per_familyRole: 'Head' },
+    {
+      icon: 'email',
+      name: 'family.new.fam_familyEmail',
+      label: 'Family Email (Optional)',
+      type: 'email',
+    },
   ];
 
   const [showCreateFamily, setShowCreateFamily] = useState(false);
@@ -108,27 +108,25 @@ function ContactDialog(props) {
    * Initialize Dialog with Data
    */
   const initDialog = useCallback(() => {
-
     setShowCreateFamily(false);
     /**
      * Dialog type: 'new'
      */
-    if (contactDialog.type === 'new'){ 
+    if (contactDialog.type === 'new') {
       reset({
         ...defaultValues,
         id: FuseUtils.generateGUID(),
       });
       setPersonData(defaultValues);
-    } else if (contactDialog.type === 'edit' ){
+    } else if (contactDialog.type === 'edit') {
       // load contact information
-      const contactData = contacts.find( (c) => c.id === contactDialog.data.person_id)
+      const contactData = contacts.find((c) => c.id === contactDialog.data.person_id);
       setPersonData(contactData);
       reset({
         ...defaultValues,
         ...contactData,
       });
     }
-
   }, [contactDialog.data, contactDialog.type, reset]);
 
   /**
@@ -154,14 +152,14 @@ function ContactDialog(props) {
    */
   function onSubmit(data) {
     // Make this tidies
-    if(data.family.addFamily==="true"){
-      data.family.id = "";
-      data.family.action = "create"
+    if (data.family.addFamily === 'true') {
+      data.family.id = '';
+      data.family.action = 'create';
     } else {
-      data.family.action = "fetch"
+      data.family.action = 'fetch';
     }
     if (contactDialog.type === 'new') {
-      console.log("submit", data);
+      console.log('submit', data);
       dispatch(addContact(data));
     } else {
       dispatch(updateContact({ ...contactDialog.data, ...data }));
@@ -177,8 +175,8 @@ function ContactDialog(props) {
     closeComposeDialog();
   }
 
-  function handleExtraDialogSubmit(data){
-    reset({...defaultValues, ...data})
+  function handleExtraDialogSubmit(data) {
+    reset({ ...defaultValues, ...data });
   }
 
   return (
@@ -296,7 +294,11 @@ function ContactDialog(props) {
                 />
 
                 <div className="flex mx-4 p-2">
-                  <Button variant="outlined" style={{ borderRadius: '0px' }} onClick={()=>dispatch(openExtraDialog(personData))}>
+                  <Button
+                    variant="outlined"
+                    style={{ borderRadius: '0px' }}
+                    onClick={() => dispatch(openExtraDialog(personData))}
+                  >
                     more..
                   </Button>
                 </div>
@@ -379,7 +381,7 @@ function ContactDialog(props) {
                   <Controller
                     control={control}
                     name={familyField.name}
-                    defaultValue=''
+                    defaultValue=""
                     render={({ field }) => (
                       <TextField
                         {...field}
@@ -422,7 +424,7 @@ function ContactDialog(props) {
                 Save
               </Button>
             </div>
-            <DeleteButton 
+            <DeleteButton
               dispatch={dispatch}
               message="This will delete this person forever and cannot be undone"
               agreeAction={() => {
@@ -432,7 +434,7 @@ function ContactDialog(props) {
           </DialogActions>
         )}
       </form>
-      <ExtraDialog handleExtraDialogSubmit={handleExtraDialogSubmit}/>
+      <ExtraDialog handleExtraDialogSubmit={handleExtraDialogSubmit} />
     </Dialog>
   );
 }

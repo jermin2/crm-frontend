@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/too
 import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import { getUserData } from './userSlice';
+// eslint-disable-next-line import/no-cycle
 import { getFamilies } from './familiesSlice';
 
 axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_access_token');

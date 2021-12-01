@@ -1,22 +1,21 @@
 import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import { getUserData } from './userSlice';
 
-import { getContacts } from './contactsSlice'
+// eslint-disable-next-line import/no-cycle
+import { getContacts } from './contactsSlice';
 
 axios.defaults.headers.common.Authorization = window.localStorage.getItem('jwt_access_token');
 
 export const getFamilies = createAsyncThunk(
   'contactsApp/families/getFamilies',
   async (routeParams, { dispatch, getState }) => {
-
     routeParams = routeParams || getState().contactsApp.families.routeParams;
     const response = await axios.get('/api/contacts-app/family/', {
       params: routeParams,
     });
     const data = await response.data;
-    //update the data with the person
+    // update the data with the person
     return { data, routeParams };
   }
 );
@@ -24,20 +23,19 @@ export const getFamilies = createAsyncThunk(
 export const removeFamily = createAsyncThunk(
   'contactsApp/contacts/removeFamily',
   async (familyId, { dispatch, getState }) => {
-    console.log('delete')
+    console.log('delete');
     await axios.delete(`/api/contacts-app/family/${familyId}/`);
-    dispatch( 
+    dispatch(
       showMessage({
-        message: "Family Removed",
+        message: 'Family Removed',
         autoHideDuration: 1000,
         anchorOrigin: {
           vertical: 'top',
-          horizontal: 'center'
+          horizontal: 'center',
         },
-        variant: 'warning'
-
+        variant: 'warning',
       })
-    )
+    );
     return familyId;
   }
 );
@@ -55,7 +53,7 @@ export const updateFamily = createAsyncThunk(
   'contactsApp/families/updateFamily',
   async (family, { dispatch, getState }) => {
     const id = family.id.toString();
-    const response = await axios.put(`/api/contacts-app/family/${id}/` , family );
+    const response = await axios.put(`/api/contacts-app/family/${id}/`, family);
     const data = await response.data;
 
     dispatch(getContacts());
@@ -67,7 +65,6 @@ const familiesAdapter = createEntityAdapter({});
 
 export const { selectAll: selectFamilies, selectById: selectFamiliesById } =
   familiesAdapter.getSelectors((state) => state.contactsApp.families);
-
 
 const familiesSlice = createSlice({
   name: 'contactsApp/families',
@@ -83,7 +80,7 @@ const familiesSlice = createSlice({
     },
     roles: {
       data: null,
-    }
+    },
   }),
   reducers: {
     setFamiliesSearchText: {
@@ -108,13 +105,9 @@ const familiesSlice = createSlice({
         },
       };
     },
-
   },
   extraReducers: {
     [updateFamily.fulfilled]: familiesAdapter.upsertOne,
-    // [addContact.fulfilled]: contactsAdapter.addOne,
-    // [removeContacts.fulfilled]: (state, action) =>
-    //   contactsAdapter.removeMany(state, action.payload),
     [removeFamily.fulfilled]: (state, action) => familiesAdapter.removeOne(state, action.payload),
     [getFamilies.fulfilled]: (state, action) => {
       const { data, routeParams } = action.payload;
@@ -123,16 +116,12 @@ const familiesSlice = createSlice({
       state.searchText = '';
     },
     [getRoles.fulfilled]: (state, action) => {
-
-      const {data} = action.payload;
+      const { data } = action.payload;
       state.roles = data;
-    }
+    },
   },
 });
 
-export const {
-  openEditFamilyDialog,
-  closeFamilyDialog,
-} = familiesSlice.actions;
+export const { openEditFamilyDialog, closeFamilyDialog } = familiesSlice.actions;
 
 export default familiesSlice.reducer;

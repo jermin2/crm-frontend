@@ -1,7 +1,7 @@
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import withReducer from 'app/store/withReducer';
 import { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useDeepCompareEffect } from '@fuse/hooks';
 import { styled } from '@mui/material/styles';
@@ -21,10 +21,6 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
   '& .FusePageSimple-header': {
     minHeight: 72,
     height: 72,
-    // [theme.breakpoints.up('lg')]: {
-    //   minHeight: 136,
-    //   height: 136,
-    // },
   },
   '& .FusePageSimple-wrapper': {
     minHeight: 0,
@@ -49,9 +45,9 @@ const Root = styled(FusePageSimple)(({ theme }) => ({
 
 function ContactsApp(props) {
   const dispatch = useDispatch();
-  const mode = 'contacts';
-  // const mode = useSelector(getListMode)
-  const {match: {path}} = props;
+  const {
+    match: { path },
+  } = props;
 
   const pageLayout = useRef(null);
   const routeParams = useParams();
@@ -67,7 +63,7 @@ function ContactsApp(props) {
     <>
       <Root
         header={<ContactsHeader pageLayout={pageLayout} />}
-        content={ path.startsWith("/apps/families") ? <FamiliesList /> : <ContactsList />}
+        content={path.startsWith('/apps/families') ? <FamiliesList /> : <ContactsList />}
         leftSidebarContent={<ContactsSidebarContent />}
         sidebarInner
         ref={pageLayout}

@@ -29,7 +29,6 @@ import {
   updateContact,
   closeQuickContactDialog,
   openEditContactDialog,
-  openQuickContactDialog,
   selectContacts,
 } from './store/contactsSlice';
 import { openEditFamilyDialog } from './store/familiesSlice';

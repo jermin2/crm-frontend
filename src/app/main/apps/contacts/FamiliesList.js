@@ -17,7 +17,6 @@ import DeleteButton from './ConfirmDelete';
 
 import {
   openQuickContactDialog,
-  removeContact,
   toggleStarredContact,
   selectContacts,
 } from './store/contactsSlice';

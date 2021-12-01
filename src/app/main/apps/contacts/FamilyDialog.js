@@ -29,13 +29,13 @@ import {
 } from './store/familiesSlice';
 
 const defaultValues = {
-
-  family_members:[{
-    per_firstName: '',
-    per_lastName: ''
-  }]
-
-
+  family_members: [
+    {
+      per_firstName: '',
+      per_lastName: '',
+      per_familyRole: 5,
+    },
+  ],
 };
 
 /**
@@ -45,15 +45,15 @@ const schema = yup.object().shape({
   fam_familyName: yup.string().required('You must enter a family name'),
   family_members: yup.array().of(
     yup.object().shape({
-     per_firstName: yup.string().required('You must enter a name'),
-    }))
+      per_firstName: yup.string().required('You must enter a name'),
+    })
+  ),
 });
 
 function FamilyDialog(props) {
   const dispatch = useDispatch();
   const families = useSelector(selectFamilies);
   const contacts = useSelector(selectContacts);
-  const familyRoles = useSelector(({ contactsApp }) => contactsApp.families.roles);
   const familyDialog = useSelector(({ contactsApp }) => contactsApp.families.familyDialog);
 
   const { control, watch, register, reset, handleSubmit, formState, getValues } = useForm({
@@ -68,7 +68,6 @@ function FamilyDialog(props) {
   const id = watch('id');
   const name = watch('name');
   const avatar = watch('avatar');
-  const family_members = watch('family_members');
 
   const familyFields = [
     { icon: 'account_circle', name: 'fam_familyName', label: 'Family Name', type: 'text' },
@@ -178,7 +177,12 @@ function FamilyDialog(props) {
           </div>
         </DialogContent>
 
-        <FamilyMemberContent control={control} formState={formState} family={familyDialog.data} dispatch={dispatch}/>
+        <FamilyMemberContent
+          control={control}
+          formState={formState}
+          family={familyDialog.data}
+          dispatch={dispatch}
+        />
 
         {familyDialog.type === 'new' ? (
           <DialogActions className="justify-between p-4 pb-16">
@@ -205,7 +209,7 @@ function FamilyDialog(props) {
                 Save
               </Button>
             </div>
-            <DeleteButton 
+            <DeleteButton
               dispatch={dispatch}
               message="This will delete the family and any people in the family and cannot be undone"
               agreeAction={() => {

@@ -10,7 +10,7 @@ import {
 
 import { openDialog, closeDialog } from 'app/store/fuse/dialogSlice';
 
-function DeleteButton({dispatch, message, agreeAction}) {
+function DeleteButton({ dispatch, message, agreeAction }) {
   function confirmDelete() {
     dispatch(
       openDialog({
@@ -18,15 +18,20 @@ function DeleteButton({dispatch, message, agreeAction}) {
           <>
             <DialogTitle id="alert-dialog-title">Confirm Delete?</DialogTitle>
             <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                {message}
-              </DialogContentText>
+              <DialogContentText id="alert-dialog-description">{message}</DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => dispatch(closeDialog())} color="primary">
                 Disagree
               </Button>
-              <Button onClick={() => { agreeAction(); dispatch(closeDialog());} } color="primary" autoFocus>
+              <Button
+                onClick={() => {
+                  agreeAction();
+                  dispatch(closeDialog());
+                }}
+                color="primary"
+                autoFocus
+              >
                 Agree
               </Button>
             </DialogActions>

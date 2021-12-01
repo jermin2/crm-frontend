@@ -18,11 +18,7 @@ import MenuItem from '@mui/material/MenuItem';
 import _ from '@lodash';
 import * as yup from 'yup';
 
-import {
-  removeContact,
-  closeExtraDialog,
-  selectContacts,
-} from './store/contactsSlice';
+import { removeContact, closeExtraDialog, selectContacts } from './store/contactsSlice';
 
 const defaultValues = {
   id: '',
@@ -47,7 +43,6 @@ const schema = yup.object().shape({
 function ExtraDialog(props) {
   const dispatch = useDispatch();
   const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.extraDialog);
-  const contacts = useSelector(selectContacts);
 
   const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
     mode: 'onChange',
@@ -79,19 +74,17 @@ function ExtraDialog(props) {
     if (contactDialog.type === 'edit' && contactDialog.data) {
       reset({ ...defaultValues, ...contactDialog.data });
     } else {
-      reset({...defaultValues})
+      reset({ ...defaultValues });
     }
-  }, [ reset]);
+  }, [reset]);
 
   /**
    * On Dialog Open
    */
   useEffect(() => {
     if (contactDialog.props.open) {
-      if(contactDialog.data)
-        reset({...defaultValues,...contactDialog.data})
-      else
-        reset({...defaultValues})
+      if (contactDialog.data) reset({ ...defaultValues, ...contactDialog.data });
+      else reset({ ...defaultValues });
     }
   }, [contactDialog.props.open, initDialog]);
 

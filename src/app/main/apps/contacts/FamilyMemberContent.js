@@ -1,4 +1,4 @@
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
 
 import MenuItem from '@mui/material/MenuItem';
@@ -14,7 +14,6 @@ import { selectContacts, openExtraDialog } from './store/contactsSlice';
 import ExtraDialog from './ExtraDialog';
 
 function FamilyMemberContent({ family, control, formState, dispatch }) {
-
   const { fields, append, replace, update, insert, remove } = useFieldArray({
     control,
     name: `family_members`,
@@ -43,13 +42,14 @@ function FamilyMemberContent({ family, control, formState, dispatch }) {
     });
 
     replace(updatedFamilyMembers);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [family, contacts]);
 
-  function handleSubmit(data){
+  function handleSubmit(data) {
     // This is hacky, but can't get update to work so it'll have to do for now
-    remove(data.k)
+    remove(data.k);
     insert(data.k, data);
-    //update(data.k, data);
+    // update(data.k, data);
   }
 
   return (
@@ -153,7 +153,11 @@ function FamilyMemberContent({ family, control, formState, dispatch }) {
                 )}
               />
               <div className="flex mx-4 p-2">
-                <Button variant="outlined" style={{ borderRadius: '0px' }} onClick={()=>dispatch(openExtraDialog({...item, k}))}>
+                <Button
+                  variant="outlined"
+                  style={{ borderRadius: '0px' }}
+                  onClick={() => dispatch(openExtraDialog({ ...item, k }))}
+                >
                   more..
                 </Button>
               </div>
@@ -171,7 +175,7 @@ function FamilyMemberContent({ family, control, formState, dispatch }) {
           Add new person
         </Button>
       </div>
-      <ExtraDialog handleExtraDialogSubmit={handleSubmit}/>
+      <ExtraDialog handleExtraDialogSubmit={handleSubmit} />
     </div>
   );
 }
