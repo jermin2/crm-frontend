@@ -36,9 +36,9 @@ function ContactsList(props) {
             )
           );
         },
-        accessor: 'avatar',
+        accessor: 'per_avatar',
         Cell: ({ row }) => {
-          return <Avatar className="mx-8" alt={row.original.name} src={row.original.avatar} />;
+          return <Avatar className="mx-8" alt={row.original.name} src={row.original.per_avatar} />;
         },
         className: 'justify-center',
         width: 64,

@@ -50,9 +50,9 @@ function FamiliesList(props) {
             )
           );
         },
-        accessor: 'avatar',
+        accessor: 'fam_avatar',
         Cell: ({ row }) => {
-          return <Avatar className="mx-8" alt={row.original.name} src={row.original.avatar} />;
+          return <Avatar className="mx-8" alt={row.original.name} src={row.original.fam_avatar} />;
         },
         className: 'justify-center',
         width: 64,
@@ -98,7 +98,7 @@ function FamiliesList(props) {
                                 <Avatar
                                   className="w-25 h-25 m-auto"
                                   alt="contact avatar"
-                                  src={person.avatar}
+                                  src={person.per_avatar}
                                 />
                               </ListItemAvatar>
                             }

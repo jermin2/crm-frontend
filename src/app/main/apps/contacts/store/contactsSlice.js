@@ -51,10 +51,27 @@ export const addContact = createAsyncThunk(
   }
 );
 
+export const uploadPicture = createAsyncThunk(
+  'contactsApp/contact/picture',
+  async (formData, { dispatch }) => {
+    const response = await axios.post(`/api/contacts-app/avatar/`, formData, {
+      headers: {
+        'content-type': 'multipart/form-data'
+      }
+    });
+    const data = await response.data;
+    console.log("returned data: ", data)
+    return data;
+  }
+)
+
+
+
 export const updateContact = createAsyncThunk(
   'contactsApp/contacts/updateContact',
   async (contact, { dispatch, getState }) => {
     const id = contact.id.toString();
+
     const response = await axios.put(`/api/contacts-app/contact/${id}/`, contact);
     const data = await response.data;
 

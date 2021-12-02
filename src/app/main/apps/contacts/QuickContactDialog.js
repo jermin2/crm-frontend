@@ -24,12 +24,19 @@ import _ from '@lodash';
 import * as yup from 'yup';
 import DeleteButton from './ConfirmDelete';
 
+
+
+
+import axios from 'axios';
+
+
 import {
   removeContact,
   updateContact,
   closeQuickContactDialog,
   openEditContactDialog,
   selectContacts,
+  uploadPicture,
 } from './store/contactsSlice';
 import { openEditFamilyDialog } from './store/familiesSlice';
 
@@ -97,7 +104,7 @@ function QuickContactDialog(props) {
      * Dialog type: 'edit'
      */
     if (contactDialog.type === 'edit' && contactDialog.data) {
-      const contactData = contacts.find( (c) => c.id === contactDialog.data.id)
+      const contactData = contacts.find((c) => c.id === contactDialog.data.id);
       reset({ ...contactData });
       setFamilyMembers(contactDialog.data.family.family_members);
     }
@@ -119,12 +126,22 @@ function QuickContactDialog(props) {
     dispatch(closeQuickContactDialog());
   }
 
+  function getBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+
   /**
    * Form Submit
    */
   function onSubmit(data) {
-    data.family.action = 'update';
 
+    data.family.action = 'update';
     dispatch(updateContact({ ...contactDialog.data, ...data }));
     closeComposeDialog();
   }
@@ -136,6 +153,18 @@ function QuickContactDialog(props) {
     dispatch(removeContact(id));
     closeComposeDialog();
   }
+
+  const [file, setFile] = React.useState('');
+
+  // Handles file upload event and updates state
+  function handleUpload(event) {
+    setFile(event.target.files[0]);
+
+    // Add code here to upload file to server
+    // ...
+  }
+
+  const [personAvatar, setPersonAvatar] = useState();
 
   return (
     <Dialog
@@ -154,7 +183,45 @@ function QuickContactDialog(props) {
           </Typography>
         </Toolbar>
         <div className="flex flex-col items-center justify-center pb-24">
-          <Avatar className="w-96 h-96" alt="contact avatar" src={avatar} />
+          <Controller
+            control={control}
+            name="per_avatar"
+            defaultValue=""
+            render={({ field: {onChange, value} }) => (
+              <>
+                <input
+                  accept="image/*"
+                  id="avatar"
+                  type="file"
+                  onChange={(e) => {
+                    // upload the file
+                    // call onChange callback to change the value
+                    const imagesrc = URL.createObjectURL(e.target.files[0]);
+                    onChange(imagesrc)
+                    setPersonAvatar(e.target.files[0]);
+                    const formData = new FormData();
+                    formData.append( 'avatar', e.target.files[0], e.target.files[0].filename)
+
+                    axios.post(`/api/contacts-app/avatar/`,formData).then(result=>{
+                      console.log(result.data.avatar)
+                      onChange(result.data.avatar);
+                    });
+                    // dispatch(uploadPicture(formData));
+                    // getBase64(e.target.files[0]).then( (url) => {
+                      
+                    // });
+                    
+                  }}
+                  hidden
+                />
+                <label htmlFor="avatar">
+                  <Button component="span">
+                    <Avatar className="w-96 h-96" alt="contact avatar" src={value} />
+                  </Button>
+                </label>
+              </>
+            )}
+          />
           {contactDialog.type === 'edit' && (
             <Typography variant="h6" color="inherit" className="pt-8">
               {name}
@@ -376,10 +443,13 @@ function QuickContactDialog(props) {
                 Save
               </Button>
             </div>
-            <DeleteButton 
+            <DeleteButton
               dispatch={dispatch}
               message="This will delete this person permanently and cannot be undone"
-              agreeAction={() => { dispatch(removeContact(contactDialog.data.id)); dispatch(closeQuickContactDialog())} }
+              agreeAction={() => {
+                dispatch(removeContact(contactDialog.data.id));
+                dispatch(closeQuickContactDialog());
+              }}
             />
           </DialogActions>
         )}
