@@ -48,8 +48,8 @@ function UserNavbarHeader(props) {
           className="avatar w-72 h-72 p-8 box-content"
           alt="user photo"
           src={
-            user.person.photoURL && user.person.photoURL !== ''
-              ? user.person.photoURL
+            user.person.per_avatar && user.person.per_avatar !== ''
+              ? user.person.per_avatar
               : 'assets/images/avatars/profile.jpg'
           }
         />

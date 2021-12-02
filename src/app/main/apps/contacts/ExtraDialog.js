@@ -14,7 +14,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 
 import MenuItem from '@mui/material/MenuItem';
-
+import ContactAvatar from './ContactAvatar';
 import _ from '@lodash';
 import * as yup from 'yup';
 
@@ -128,7 +128,7 @@ function ExtraDialog(props) {
           </Typography>
         </Toolbar>
         <div className="flex flex-col items-center justify-center pb-24">
-          <Avatar className="w-96 h-96" alt="contact avatar" src={avatar} />
+          <ContactAvatar control={control} />
           {contactDialog.type === 'edit' && (
             <Typography variant="h6" color="inherit" className="pt-8">
               {name}

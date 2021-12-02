@@ -23,7 +23,7 @@ import MenuItem from '@mui/material/MenuItem';
 import _ from '@lodash';
 import * as yup from 'yup';
 import DeleteButton from './ConfirmDelete';
-
+import ContactAvatar from './ContactAvatar'
 
 
 
@@ -49,7 +49,7 @@ const defaultValues = {
   per_phone: '',
   per_birthday: '',
   school_year: '',
-  notes: '',
+  per_notes: '',
 };
 
 /**
@@ -164,8 +164,6 @@ function QuickContactDialog(props) {
     // ...
   }
 
-  const [personAvatar, setPersonAvatar] = useState();
-
   return (
     <Dialog
       classes={{
@@ -183,45 +181,7 @@ function QuickContactDialog(props) {
           </Typography>
         </Toolbar>
         <div className="flex flex-col items-center justify-center pb-24">
-          <Controller
-            control={control}
-            name="per_avatar"
-            defaultValue=""
-            render={({ field: {onChange, value} }) => (
-              <>
-                <input
-                  accept="image/*"
-                  id="avatar"
-                  type="file"
-                  onChange={(e) => {
-                    // upload the file
-                    // call onChange callback to change the value
-                    const imagesrc = URL.createObjectURL(e.target.files[0]);
-                    onChange(imagesrc)
-                    setPersonAvatar(e.target.files[0]);
-                    const formData = new FormData();
-                    formData.append( 'avatar', e.target.files[0], e.target.files[0].filename)
-
-                    axios.post(`/api/contacts-app/avatar/`,formData).then(result=>{
-                      console.log(result.data.avatar)
-                      onChange(result.data.avatar);
-                    });
-                    // dispatch(uploadPicture(formData));
-                    // getBase64(e.target.files[0]).then( (url) => {
-                      
-                    // });
-                    
-                  }}
-                  hidden
-                />
-                <label htmlFor="avatar">
-                  <Button component="span">
-                    <Avatar className="w-96 h-96" alt="contact avatar" src={value} />
-                  </Button>
-                </label>
-              </>
-            )}
-          />
+        <ContactAvatar control={control} />
           {contactDialog.type === 'edit' && (
             <Typography variant="h6" color="inherit" className="pt-8">
               {name}
@@ -316,7 +276,7 @@ function QuickContactDialog(props) {
             </div>
             <Controller
               control={control}
-              name="notes"
+              name="per_notes"
               defaultValue=""
               render={({ field }) => (
                 <TextField
@@ -404,7 +364,7 @@ function QuickContactDialog(props) {
                       }}
                     >
                       <ListItemAvatar>
-                        <Avatar className="w-20 h-20" alt="contact avatar" src={avatar} />
+                        <Avatar className="w-20 h-20" alt="contact avatar" src={person.per_avatar} />
                       </ListItemAvatar>
                       <ListItemText primary={`${person.per_firstName} ${person.per_lastName}`} />
                       <ListItemText

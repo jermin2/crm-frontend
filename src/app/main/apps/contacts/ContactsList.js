@@ -57,6 +57,12 @@ function ContactsList(props) {
         sortable: true,
       },
       {
+        Header: 'Age Group',
+        accessor: 'ageGroup',
+        className: 'font-medium',
+        sortable: true,
+      },
+      {
         id: 'action',
         width: 128,
         sortable: false,
