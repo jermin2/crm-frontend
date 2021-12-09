@@ -20,6 +20,7 @@ function ContactsList(props) {
   const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
   const searchText = useSelector(({ contactsApp }) => contactsApp.contacts.searchText);
+  const filterTags = useSelector(({ contactsApp }) => contactsApp.contacts.filterTags);
   const user = useSelector(({ contactsApp }) => contactsApp.user);
 
   const [filteredData, setFilteredData] = useState(null);
@@ -63,25 +64,30 @@ function ContactsList(props) {
         sortable: true,
       },
       {
+        id: 'tags',
+        width: 128,
+        Header: 'Tags',
+        accessor: 'tags',
+        sortable: true,
+        Cell: ({ row }) => (
+          <div className="flex items-center">
+            {row.original.tags.map((t, i) => {
+              return (
+                <Icon key={t.tag_id} sx={{ color: t.color }} className="text-700">
+                  add_circle
+                </Icon>
+              );
+            })}
+          </div>
+        ),
+      },
+      {
         id: 'action',
         width: 128,
         sortable: false,
         Cell: ({ row }) => (
           <div className="flex items-center">
-            <IconButton
-              onClick={(ev) => {
-                ev.stopPropagation();
-                dispatch(toggleStarredContact(row.original.id));
-              }}
-              size="large"
-            >
-              {user.starred && user.starred.includes(row.original.id) ? (
-                <Icon className="text-yellow-700">star</Icon>
-              ) : (
-                <Icon>star_border</Icon>
-              )}
-            </IconButton>
-            <DeleteButton 
+            <DeleteButton
               dispatch={dispatch}
               message="This will delete this person permanently and cannot be undone"
               agreeAction={() => dispatch(removeContact(row.original.id))}
@@ -106,6 +112,23 @@ function ContactsList(props) {
     }
   }, [contacts, searchText]);
 
+  useEffect(() => {
+    function getFilteredArray(entities, _filterTags) {
+      if (_filterTags.length === 0) {
+        return contacts;
+      }
+
+      // Filter contact list by tags
+      return contacts.filter( c => {
+        return c.tags.some( t => t.tag_id === _filterTags)
+      })
+    }
+
+    if (contacts) {
+      setFilteredData(getFilteredArray(contacts, filterTags));
+    }
+  }, [contacts, filterTags]);
+
   if (!filteredData) {
     return null;
   }
@@ -119,6 +142,8 @@ function ContactsList(props) {
       </div>
     );
   }
+
+  console.log('user', user);
 
   return (
     <motion.div

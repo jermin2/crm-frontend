@@ -13,6 +13,7 @@ export const getContacts = createAsyncThunk(
     routeParams = routeParams || getState().contactsApp.contacts.routeParams;
     const response = await axios.get('/api/contacts-app/contact/');
     const data = await response.data;
+    console.log("data :", data)
     dispatch(getFamilies());
     return { data, routeParams };
   }
@@ -180,6 +181,7 @@ const contactsSlice = createSlice({
   name: 'contactsApp/contacts',
   initialState: contactsAdapter.getInitialState({
     searchText: '',
+    filterTags: [],
     routeParams: {},
     quickContactDialog: {
       props: {
@@ -206,6 +208,9 @@ const contactsSlice = createSlice({
         state.searchText = action.payload;
       },
       prepare: (event) => ({ payload: event.target.value || '' }),
+    },
+    setContactsFilterTags: (state, action) => {
+      state.filterTags = action.payload;
     },
     openNewContactDialog: (state, action) => {
       state.contactDialog = {
@@ -289,11 +294,13 @@ const contactsSlice = createSlice({
       contactsAdapter.setAll(state, data);
       state.routeParams = routeParams;
       state.searchText = '';
+      state.filterTags = [];
     },
   },
 });
 
 export const {
+  setContactsFilterTags,
   setContactsSearchText,
   openNewContactDialog,
   closeNewContactDialog,

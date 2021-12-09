@@ -11,7 +11,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { openNewContactDialog } from './store/contactsSlice';
+import { openNewContactDialog, setContactsFilterTags } from './store/contactsSlice';
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   color: 'inherit!important',
@@ -107,6 +107,23 @@ function ContactsSidebarContent(props) {
             </Icon>
             <ListItemText className="truncate" primary="Frequently contacted" disableTypography />
           </StyledListItem>
+
+          {user.tags ? user.tags.map((t, i) => {
+            return <StyledListItem 
+              button
+
+              onClick={ () => dispatch(setContactsFilterTags(t.tag_id))}
+              // component={NavLinkAdapter}
+              // to={`/apps/contacts/tag/${t.tag_id}`}
+              activeClassName="active">
+                <Icon key={t.tag_id} sx={{ color: t.color }} className="list-item-icon text-16">
+                  add_circle
+                </Icon>
+                <ListItemText className="truncate" primary={t.description} disableTypography />
+                
+              </StyledListItem>
+          }) : <></>}
+
           <StyledListItem
             button
             component={NavLinkAdapter}
