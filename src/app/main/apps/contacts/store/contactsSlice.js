@@ -75,6 +75,7 @@ export const updateContact = createAsyncThunk(
     const data = await response.data;
 
     dispatch(getContacts());
+    dispatch(getFamilies());
 
     return data;
   }
