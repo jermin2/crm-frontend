@@ -74,7 +74,7 @@ function ContactsList(props) {
             {row.original.tags.map((t, i) => {
               return (
                 <Icon key={t.tag_id} sx={{ color: t.color }} className="text-700">
-                  add_circle
+                  radio_button_checked
                 </Icon>
               );
             })}
@@ -117,10 +117,11 @@ function ContactsList(props) {
       if (_filterTags.length === 0) {
         return contacts;
       }
-
       // Filter contact list by tags
       return contacts.filter( c => {
-        return c.tags.some( t => t.tag_id === _filterTags)
+        return c.tags.some( t => {
+          return filterTags.some(ft=> ft === t.tag_id ) 
+        })
       })
     }
 

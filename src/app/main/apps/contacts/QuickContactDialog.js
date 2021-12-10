@@ -17,18 +17,16 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
+import IconButton from '@mui/material/IconButton';
 
 import MenuItem from '@mui/material/MenuItem';
 
 import _ from '@lodash';
 import * as yup from 'yup';
 import DeleteButton from './ConfirmDelete';
-import ContactAvatar from './ContactAvatar'
-
-
+import ContactAvatar from './ContactAvatar';
 
 import axios from 'axios';
-
 
 import {
   removeContact,
@@ -37,6 +35,8 @@ import {
   openEditContactDialog,
   selectContacts,
   uploadPicture,
+  setContactsTag,
+  setContactsUnTag,
 } from './store/contactsSlice';
 import { openEditFamilyDialog } from './store/familiesSlice';
 
@@ -63,6 +63,7 @@ function QuickContactDialog(props) {
   const dispatch = useDispatch();
   const contactDialog = useSelector(({ contactsApp }) => contactsApp.contacts.quickContactDialog);
   const contacts = useSelector(selectContacts);
+  const user = useSelector(({ contactsApp }) => contactsApp.user);
 
   const { control, watch, reset, handleSubmit, formState, getValues } = useForm({
     mode: 'onChange',
@@ -94,6 +95,7 @@ function QuickContactDialog(props) {
   ];
 
   const [familyMembers, setFamilyMembers] = useState(familyMembersA);
+  const [personData, setPersonData] = useState();
 
   const familyRoles = useSelector(({ contactsApp }) => contactsApp.families.roles);
   /**
@@ -106,9 +108,10 @@ function QuickContactDialog(props) {
     if (contactDialog.type === 'edit' && contactDialog.data) {
       const contactData = contacts.find((c) => c.id === contactDialog.data.id);
       reset({ ...contactData });
+      setPersonData(contactData);
       setFamilyMembers(contactDialog.data.family.family_members);
     }
-  }, [contactDialog.data, contactDialog.type, reset]);
+  }, [contactDialog.data, contactDialog.type, reset, contacts]);
 
   /**
    * On Dialog Open
@@ -131,16 +134,14 @@ function QuickContactDialog(props) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   }
-
 
   /**
    * Form Submit
    */
   function onSubmit(data) {
-
     data.family.action = 'update';
     dispatch(updateContact({ ...contactDialog.data, ...data }));
     closeComposeDialog();
@@ -181,11 +182,36 @@ function QuickContactDialog(props) {
           </Typography>
         </Toolbar>
         <div className="flex flex-col items-center justify-center pb-24">
-        <ContactAvatar control={control} />
+          <ContactAvatar control={control} />
           {contactDialog.type === 'edit' && (
             <Typography variant="h6" color="inherit" className="pt-8">
               {name}
             </Typography>
+          )}
+        </div>
+        <div className="flex flex-row items-center justify-center pb-24">
+          {user.tags ? (
+            user.tags.map((t) => {
+              return (
+                <div key={t.tag_id} className="flex flex-row">
+                  <IconButton
+                    onClick={(ev) => {
+                      dispatch(setContactsTag({personId: personData.id, tag: t}));
+                      // Remove
+                      ev.stopPropagation();
+                    }}
+                  >
+                    <Icon key={t.tag_id} sx={{ color: t.color }}>
+                      {personData && personData.tags.some((tag) => tag.tag_id === t.tag_id)
+                        ? 'radio_button_checked'
+                        : 'radio_button_unchecked'}
+                    </Icon>
+                  </IconButton>
+                </div>
+              );
+            })
+          ) : (
+            <></>
           )}
         </div>
       </AppBar>
@@ -195,6 +221,9 @@ function QuickContactDialog(props) {
         className="flex flex-col md:overflow-hidden"
       >
         <DialogContent classes={{ root: 'p-24' }}>
+
+
+
           <div className="flex">
             <div className="min-w-48 pt-20">
               <Icon color="action">account_circle</Icon>
@@ -364,7 +393,11 @@ function QuickContactDialog(props) {
                       }}
                     >
                       <ListItemAvatar>
-                        <Avatar className="w-20 h-20" alt="contact avatar" src={person.per_avatar} />
+                        <Avatar
+                          className="w-20 h-20"
+                          alt="contact avatar"
+                          src={person.per_avatar}
+                        />
                       </ListItemAvatar>
                       <ListItemText primary={`${person.per_firstName} ${person.per_lastName}`} />
                       <ListItemText

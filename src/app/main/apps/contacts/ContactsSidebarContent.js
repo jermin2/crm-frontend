@@ -11,7 +11,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { openNewContactDialog, setContactsFilterTags } from './store/contactsSlice';
+import { openNewContactDialog, setContactsFilterTags, openTagDialog, newTagDialog } from './store/contactsSlice';
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   color: 'inherit!important',
@@ -42,7 +42,7 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
 
 function ContactsSidebarContent(props) {
   const user = useSelector(({ contactsApp }) => contactsApp.user);
-
+  const tagFilters = useSelector(({ contactsApp }) => contactsApp.contacts.filterTags);
   const dispatch = useDispatch();
 
   return (
@@ -95,46 +95,46 @@ function ContactsSidebarContent(props) {
             </Icon>
             <ListItemText className="truncate" primary="Family View" disableTypography />
           </StyledListItem>
+
+          {user.tags ? (
+            user.tags.map((t, i) => {
+              return (
+                <StyledListItem
+                  button
+                  onClick={() => dispatch(setContactsFilterTags(t.tag_id))}
+                  key={t.tag_id}
+                >
+                  <Icon key={t.tag_id} sx={{ color: t.color }} className="list-item-icon text-16">
+                    {tagFilters.includes(t.tag_id)
+                      ? 'radio_button_checked'
+                      : 'radio_button_unchecked'}
+                  </Icon>
+                  <ListItemText className="truncate" primary={t.description} disableTypography />
+                  <Icon
+                    onClick={(ev) => {
+                      dispatch(openTagDialog(t));
+                      ev.stopPropagation();
+                    }}
+                  >
+                    edit
+                  </Icon>
+                </StyledListItem>
+              );
+            })
+          ) : (
+            <></>
+          )}
+
+<StyledListItem
+            button
+            onClick={ () => dispatch(newTagDialog())}
+          >
+            <Icon className="list-item-icon text-16" color="action">
+              add
+            </Icon>
+            <ListItemText className="truncate" primary="Add Tag" disableTypography />
+          </StyledListItem>
           
-          <StyledListItem
-            button
-            component={NavLinkAdapter}
-            to="/apps/contacts/frequent"
-            activeClassName="active"
-          >
-            <Icon className="list-item-icon text-16" color="action">
-              restore
-            </Icon>
-            <ListItemText className="truncate" primary="Frequently contacted" disableTypography />
-          </StyledListItem>
-
-          {user.tags ? user.tags.map((t, i) => {
-            return <StyledListItem 
-              button
-
-              onClick={ () => dispatch(setContactsFilterTags(t.tag_id))}
-              // component={NavLinkAdapter}
-              // to={`/apps/contacts/tag/${t.tag_id}`}
-              activeClassName="active">
-                <Icon key={t.tag_id} sx={{ color: t.color }} className="list-item-icon text-16">
-                  add_circle
-                </Icon>
-                <ListItemText className="truncate" primary={t.description} disableTypography />
-                
-              </StyledListItem>
-          }) : <></>}
-
-          <StyledListItem
-            button
-            component={NavLinkAdapter}
-            to="/apps/contacts/starred"
-            activeClassName="active"
-          >
-            <Icon className="list-item-icon text-16" color="action">
-              star
-            </Icon>
-            <ListItemText className="truncate" primary="Starred contacts" disableTypography />
-          </StyledListItem>
         </List>
       </Paper>
     </div>

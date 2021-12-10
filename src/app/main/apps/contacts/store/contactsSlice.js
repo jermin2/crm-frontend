@@ -13,7 +13,7 @@ export const getContacts = createAsyncThunk(
     routeParams = routeParams || getState().contactsApp.contacts.routeParams;
     const response = await axios.get('/api/contacts-app/contact/');
     const data = await response.data;
-    console.log("data :", data)
+    console.log('data :', data);
     dispatch(getFamilies());
     return { data, routeParams };
   }
@@ -57,16 +57,14 @@ export const uploadPicture = createAsyncThunk(
   async (formData, { dispatch }) => {
     const response = await axios.post(`/api/contacts-app/avatar/`, formData, {
       headers: {
-        'content-type': 'multipart/form-data'
-      }
+        'content-type': 'multipart/form-data',
+      },
     });
     const data = await response.data;
-    console.log("returned data: ", data)
+    console.log('returned data: ', data);
     return data;
   }
-)
-
-
+);
 
 export const updateContact = createAsyncThunk(
   'contactsApp/contacts/updateContact',
@@ -140,14 +138,71 @@ export const toggleStarredContacts = createAsyncThunk(
     return data;
   }
 );
-
 export const setContactsStarred = createAsyncThunk(
   'contactsApp/contacts/setContactsStarred',
   async (contactIds, { dispatch, getState }) => {
-    const response = await axios.post('/api/contacts-app/set-contacts-starred', { contactIds });
+    const response = await axios.post('/api/contacts-app/updateContacts', { contactIds });
     const data = await response.data;
 
     dispatch(getUserData());
+
+    dispatch(getContacts());
+
+    return data;
+  }
+);
+
+export const setContactsTag = createAsyncThunk(
+  'contactsApp/contacts/setContactsTag',
+  async ({ personId, tag }, { dispatch, getState }) => {
+    console.log('sending out request');
+    const response = await axios.patch(`/api/contacts-app/updatetags/${personId}`, tag);
+    const data = await response.data;
+    dispatch(getContacts());
+    return data;
+  }
+);
+export const addTag = createAsyncThunk(
+  'contactsApp/contacts/setContactsTag',
+  async ( tag , { dispatch, getState }) => {
+
+    const response = await axios.post(`/api/contacts-app/tag/`, tag);
+    const data = await response.data;
+    dispatch(getUserData());
+
+    return data;
+  }
+);
+
+export const updateTag = createAsyncThunk(
+  'contactsApp/contacts/setContactsTag',
+  async ( tag , { dispatch, getState }) => {
+
+    const response = await axios.put(`/api/contacts-app/tag/${tag.tag_id}/`, tag);
+    const data = await response.data;
+    dispatch(getUserData())
+
+    return data;
+  }
+);
+
+export const removeTag = createAsyncThunk(
+  'contactsApp/contacts/setContactsTag',
+  async ( tag , { dispatch, getState }) => {
+
+    const response = await axios.delete(`/api/contacts-app/tag/${tag.tag_id}/`);
+    const data = await response.data;
+    dispatch(getUserData())
+
+    return data;
+  }
+);
+
+export const setContactsUnTag = createAsyncThunk(
+  'contactsApp/contacts/setContactsUnstarred',
+  async (contactIds, { dispatch, getState }) => {
+    const response = await axios.post('/api/contacts-app/set-contacts-unstarred', { contactIds });
+    const data = await response.data;
 
     dispatch(getContacts());
 
@@ -195,12 +250,18 @@ const contactsSlice = createSlice({
       },
       data: null,
     },
+    tagDialog: {
+      props: {
+        open: false,
+      },
+      data: null,
+    },
     extraDialog: {
       props: {
         open: false,
       },
       data: null,
-    }
+    },
   }),
   reducers: {
     setContactsSearchText: {
@@ -210,7 +271,11 @@ const contactsSlice = createSlice({
       prepare: (event) => ({ payload: event.target.value || '' }),
     },
     setContactsFilterTags: (state, action) => {
-      state.filterTags = action.payload;
+      if (state.filterTags.includes(action.payload)) {
+        state.filterTags = state.filterTags.filter((t) => t.tag_id !== action.payload.tag_id);
+      } else {
+        state.filterTags.push(action.payload);
+      }
     },
     openNewContactDialog: (state, action) => {
       state.contactDialog = {
@@ -282,6 +347,33 @@ const contactsSlice = createSlice({
         data: null,
       };
     },
+    openTagDialog: (state, action) => {
+      state.tagDialog = {
+        type: 'edit',
+        props: {
+          open: true,
+        },
+        data: action.payload,
+      }
+    },
+    newTagDialog: (state, action) => {
+      state.tagDialog = {
+        type: 'new',
+        props: {
+          open: true,
+        },
+        data: null,
+      }
+    },
+    closeTagDialog: (state, action) => {
+      state.tagDialog = {
+        type: 'edit',
+        props: {
+          open: false,
+        },
+        data: null,
+      }
+    }
   },
   extraReducers: {
     [updateContact.fulfilled]: contactsAdapter.upsertOne,
@@ -310,6 +402,9 @@ export const {
   closeQuickContactDialog,
   openExtraDialog,
   closeExtraDialog,
+  openTagDialog,
+  closeTagDialog,
+  newTagDialog,
 } = contactsSlice.actions;
 
 export default contactsSlice.reducer;

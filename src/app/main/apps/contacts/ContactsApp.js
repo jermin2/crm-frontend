@@ -8,6 +8,7 @@ import { styled } from '@mui/material/styles';
 import ContactDialog from './ContactDialog';
 import QuickContactDialog from './QuickContactDialog';
 import FamilyDialog from './FamilyDialog';
+import TagDialog from './TagDialog';
 import ContactsHeader from './ContactsHeader';
 import FamiliesList from './FamiliesList';
 import ContactsList from './ContactsList';
@@ -72,6 +73,7 @@ function ContactsApp(props) {
       <ContactDialog />
       <QuickContactDialog />
       <FamilyDialog />
+      <TagDialog />
     </>
   );
 }
