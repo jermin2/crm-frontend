@@ -12,14 +12,6 @@ import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import IconButton from '@mui/material/IconButton';
-
-import MenuItem from '@mui/material/MenuItem';
 
 import _ from '@lodash';
 import * as yup from 'yup';
@@ -28,31 +20,17 @@ import ContactAvatar from './ContactAvatar';
 
 import {
   removeContact,
-  updateContact,
-  closeQuickContactDialog,
-  openEditContactDialog,
   selectContacts,
-  uploadPicture,
-  setContactsTag,
-  setContactsUnTag,
   updateTag,
   closeTagDialog,
   removeTag,
   addTag,
 } from './store/contactsSlice';
 
-import { openEditFamilyDialog } from './store/familiesSlice';
-
 const defaultValues = {
   id: '',
-  per_firstName: '',
-  per_lastName: '',
-  avatar: 'assets/images/avatars/profile.jpg',
-  per_email: '',
-  per_phone: '',
-  per_birthday: '',
-  school_year: '',
-  per_notes: '',
+  color: 'black',
+  description: 'some description'
 };
 
 /**
@@ -78,11 +56,6 @@ function TagDialog(props) {
   const { isValid, dirtyFields, errors } = formState;
 
   const id = watch('tag_id');
-  const name = watch('name');
-  const avatar = watch('avatar');
-
-  console.log('tag data: ', tagDialog);
-  console.log('user data: ', user);
 
   /**
    * Initialize Dialog with Data
@@ -93,6 +66,8 @@ function TagDialog(props) {
      */
     if (tagDialog.type === 'edit' && tagDialog.data) {
       reset({ ...tagDialog.data });
+    } else {
+      reset({...defaultValues});
     }
   }, [tagDialog.data, tagDialog.type, reset, contacts]);
 
@@ -117,8 +92,6 @@ function TagDialog(props) {
     } else {
       dispatch(addTag({ ...tagDialog.data, ...data, user: user.id }));
     }
-    console.log(data);
-
     closeDialog();
   }
 

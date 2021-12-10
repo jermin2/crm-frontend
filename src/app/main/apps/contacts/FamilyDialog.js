@@ -6,9 +6,11 @@ import DialogContent from '@mui/material/DialogContent';
 import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
 
 import _ from '@lodash';
 import * as yup from 'yup';
@@ -19,7 +21,7 @@ import DeleteButton from './ConfirmDelete';
 
 import './ContactDialog.css';
 
-import { selectContacts, removeContact } from './store/contactsSlice';
+import { selectContacts, removeContact, setFamilyTag } from './store/contactsSlice';
 
 import {
   selectFamilies,
@@ -55,6 +57,7 @@ function FamilyDialog(props) {
   const families = useSelector(selectFamilies);
   const contacts = useSelector(selectContacts);
   const familyDialog = useSelector(({ contactsApp }) => contactsApp.families.familyDialog);
+  const user = useSelector(({ contactsApp }) => contactsApp.user);
 
   const { control, watch, register, reset, handleSubmit, formState, getValues } = useForm({
     mode: 'onChange',
@@ -64,6 +67,8 @@ function FamilyDialog(props) {
   });
 
   const { isValid, dirtyFields, errors } = formState;
+
+  const [familyData, setFamilyData] = useState();
 
   const id = watch('id');
   const name = watch('name');
@@ -88,15 +93,16 @@ function FamilyDialog(props) {
      * Load person data from the contacts form
      */
     if (familyDialog.type === 'edit' && familyDialog.data) {
-      const familyData = families.find((f) => f.id === familyDialog.data.id);
-      const familyMembers = familyData.family_members.map((person) => {
+      const familyDataInput = families.find((f) => f.id === familyDialog.data.id);
+      const familyMembers = familyDataInput.family_members.map((person) => {
         const personData = contacts.find((c) => c.id === person.id);
         return { ...person, ...personData };
       });
-      const familyDataInit = { ...familyData, family_members: [...familyMembers] };
+      const familyDataInit = { ...familyDataInput, family_members: [...familyMembers] };
       reset({ ...defaultValues, ...familyDataInit });
+      setFamilyData(familyDataInit);
     }
-  }, [familyDialog.data, familyDialog.type, reset]);
+  }, [familyDialog.data, familyDialog.type, reset, families]);
 
   /**
    * On Dialog Open
@@ -175,6 +181,31 @@ function FamilyDialog(props) {
               </div>
             ))}
           </div>
+          <div className="flex flex-row items-center justify-center pb-24">
+          {user.tags ? (
+            user.tags.map((t) => {
+              return (
+                <div key={t.tag_id} className="flex flex-row">
+                  <IconButton
+                    onClick={(ev) => {
+                      dispatch(setFamilyTag({familyId: familyData.id, tag: t}));
+                      // Remove
+                      ev.stopPropagation();
+                    }}
+                  >
+                    <Icon key={t.tag_id} sx={{ color: t.color }}>
+                      {familyData && familyData.tags.some((tag) => tag.tag_id === t.tag_id)
+                        ? 'radio_button_checked'
+                        : 'radio_button_unchecked'}
+                    </Icon>
+                  </IconButton>
+                </div>
+              );
+            })
+          ) : (
+            <></>
+          )}
+        </div>
         </DialogContent>
 
         <FamilyMemberContent

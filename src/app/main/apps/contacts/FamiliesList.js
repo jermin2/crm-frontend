@@ -33,6 +33,7 @@ function FamiliesList(props) {
   const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
   const families = useSelector(selectFamilies);
+  const filterTags = useSelector(({ contactsApp }) => contactsApp.contacts.filterTags);
   const searchText = useSelector(({ contactsApp }) => contactsApp.contacts.searchText);
   const user = useSelector(({ contactsApp }) => contactsApp.user);
 
@@ -116,24 +117,29 @@ function FamiliesList(props) {
         sortable: true,
       },
       {
+        id: 'tags',
+        width: 128,
+        Header: 'Tags',
+        accessor: 'tags',
+        sortable: true,
+        Cell: ({ row }) => (
+          <div className="flex items-center">
+            {row.original.tags.map((t, i) => {
+              return (
+                <Icon key={t.tag_id} sx={{ color: t.color }} className="text-700">
+                  radio_button_checked
+                </Icon>
+              );
+            })}
+          </div>
+        ),
+      },
+      {
         id: 'action',
         width: 128,
         sortable: false,
         Cell: ({ row }) => (
           <div className="flex items-center">
-            <IconButton
-              onClick={(ev) => {
-                ev.stopPropagation();
-                dispatch(toggleStarredContact(row.original.id));
-              }}
-              size="large"
-            >
-              {user.starred && user.starred.includes(row.original.id) ? (
-                <Icon className="text-yellow-700">star</Icon>
-              ) : (
-                <Icon>star_border</Icon>
-              )}
-            </IconButton>
             <DeleteButton 
               dispatch={dispatch}
               message="This will delete the family and any people in the family and cannot be undone"
@@ -158,6 +164,24 @@ function FamiliesList(props) {
       setFilteredData(getFilteredArray(families, searchText));
     }
   }, [families, searchText]);
+
+  useEffect(() => {
+    function getFilteredArray(entities, _filterTags) {
+      if (_filterTags.length === 0) {
+        return families;
+      }
+      // Filter contact list by tags
+      return families.filter( f => {
+        return f.tags.some( t => {
+          return filterTags.some(ft=> ft === t.tag_id ) 
+        })
+      })
+    }
+
+    if (families) {
+      setFilteredData(getFilteredArray(families, filterTags));
+    }
+  }, [contacts, filterTags]);
 
   if (!filteredData) {
     return null;

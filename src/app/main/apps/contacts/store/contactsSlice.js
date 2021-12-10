@@ -162,6 +162,18 @@ export const setContactsTag = createAsyncThunk(
     return data;
   }
 );
+
+export const setFamilyTag = createAsyncThunk(
+  'contactsApp/contacts/setFamilyTag',
+  async ({ familyId, tag }, { dispatch, getState }) => {
+    console.log('sending out request');
+    const response = await axios.patch(`/api/contacts-app/updatefamilytags/${familyId}`, tag);
+    const data = await response.data;
+    dispatch(getFamilies());
+    return data;
+  }
+);
+
 export const addTag = createAsyncThunk(
   'contactsApp/contacts/setContactsTag',
   async ( tag , { dispatch, getState }) => {
@@ -181,6 +193,7 @@ export const updateTag = createAsyncThunk(
     const response = await axios.put(`/api/contacts-app/tag/${tag.tag_id}/`, tag);
     const data = await response.data;
     dispatch(getUserData())
+    dispatch(getContacts());
 
     return data;
   }
@@ -193,7 +206,7 @@ export const removeTag = createAsyncThunk(
     const response = await axios.delete(`/api/contacts-app/tag/${tag.tag_id}/`);
     const data = await response.data;
     dispatch(getUserData())
-
+    dispatch(getContacts());
     return data;
   }
 );

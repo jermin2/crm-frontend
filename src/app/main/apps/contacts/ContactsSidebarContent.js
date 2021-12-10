@@ -11,7 +11,12 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { openNewContactDialog, setContactsFilterTags, openTagDialog, newTagDialog } from './store/contactsSlice';
+import {
+  openNewContactDialog,
+  setContactsFilterTags,
+  openTagDialog,
+  newTagDialog,
+} from './store/contactsSlice';
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   color: 'inherit!important',
@@ -125,16 +130,14 @@ function ContactsSidebarContent(props) {
             <></>
           )}
 
-<StyledListItem
-            button
-            onClick={ () => dispatch(newTagDialog())}
-          >
+          {user.tags && user.tags.length < 4 ? 
+          <StyledListItem button onClick={() => dispatch(newTagDialog())}>
             <Icon className="list-item-icon text-16" color="action">
               add
             </Icon>
             <ListItemText className="truncate" primary="Add Tag" disableTypography />
           </StyledListItem>
-          
+          : <></>}
         </List>
       </Paper>
     </div>
