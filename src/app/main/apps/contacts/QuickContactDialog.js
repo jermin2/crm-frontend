@@ -35,7 +35,7 @@ import {
   openEditContactDialog,
   selectContacts,
   uploadPicture,
-  setContactsTag,
+  setContactTag,
   setContactsUnTag,
 } from './store/contactsSlice';
 import { openEditFamilyDialog } from './store/familiesSlice';
@@ -196,7 +196,7 @@ function QuickContactDialog(props) {
                 <div key={t.tag_id} className="flex flex-row">
                   <IconButton
                     onClick={(ev) => {
-                      dispatch(setContactsTag({personId: personData.id, tag: t}));
+                      dispatch(setContactTag({personId: personData.id, tag: t}));
                       // Remove
                       ev.stopPropagation();
                     }}

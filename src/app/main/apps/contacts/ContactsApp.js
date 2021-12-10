@@ -64,7 +64,8 @@ function ContactsApp(props) {
     <>
       <Root
         header={<ContactsHeader pageLayout={pageLayout} />}
-        content={path.startsWith('/apps/families') ? <FamiliesList /> : <ContactsList />}
+        content={<><FamiliesList /> <ContactsList /> </>}
+        // content={path.startsWith('/apps/families') ? <FamiliesList /> : <ContactsList />}
         leftSidebarContent={<ContactsSidebarContent />}
         sidebarInner
         ref={pageLayout}

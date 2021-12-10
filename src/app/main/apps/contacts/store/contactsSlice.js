@@ -152,9 +152,29 @@ export const setContactsStarred = createAsyncThunk(
     return data;
   }
 );
+export const clearContactsTag = createAsyncThunk(
+  'contactsApp/contacts/clearContactsTag',
+  async ({ selectedIds }, { dispatch, getState }) => {
+    console.log("ids: ", selectedIds)
+    const response = await axios.post(`/api/contacts-app/ContactsTags/`, selectedIds);
+    const data = await response.data;
+    dispatch(getContacts());
+    return data;
+  }
+);
 
 export const setContactsTag = createAsyncThunk(
   'contactsApp/contacts/setContactsTag',
+  async ({ selectedIds, tag }, { dispatch, getState }) => {
+    const response = await axios.put(`/api/contacts-app/ContactsTags/`, {selectedIds, tag});
+    const data = await response.data;
+    dispatch(getContacts());
+    return data;
+  }
+);
+
+export const setContactTag = createAsyncThunk(
+  'contactsApp/contacts/setContactTag',
   async ({ personId, tag }, { dispatch, getState }) => {
     console.log('sending out request');
     const response = await axios.patch(`/api/contacts-app/updatetags/${personId}`, tag);

@@ -1,4 +1,3 @@
-import NavLinkAdapter from '@fuse/core/NavLinkAdapter';
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -17,6 +16,8 @@ import {
   openTagDialog,
   newTagDialog,
 } from './store/contactsSlice';
+
+import { showFamilyList, showContactList } from './store/displaySlice';
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   color: 'inherit!important',
@@ -77,24 +78,14 @@ function ContactsSidebarContent(props) {
         </div>
 
         <List className="pt-0 px-12">
-          <StyledListItem
-            button
-            component={NavLinkAdapter}
-            to="/apps/contacts/all"
-            activeClassName="active"
-          >
+          <StyledListItem button onClick={() => dispatch(showContactList())}>
             <Icon className="list-item-icon text-16" color="action">
               people
             </Icon>
             <ListItemText className="truncate" primary="Person View" disableTypography />
           </StyledListItem>
 
-          <StyledListItem
-            button
-            component={NavLinkAdapter}
-            to="/apps/families/all"
-            activeClassName="active"
-          >
+          <StyledListItem button onClick={() => dispatch(showFamilyList())}>
             <Icon className="list-item-icon text-16" color="action">
               people
             </Icon>
@@ -130,14 +121,16 @@ function ContactsSidebarContent(props) {
             <></>
           )}
 
-          {user.tags && user.tags.length < 4 ? 
-          <StyledListItem button onClick={() => dispatch(newTagDialog())}>
-            <Icon className="list-item-icon text-16" color="action">
-              add
-            </Icon>
-            <ListItemText className="truncate" primary="Add Tag" disableTypography />
-          </StyledListItem>
-          : <></>}
+          {user.tags && user.tags.length < 4 ? (
+            <StyledListItem button onClick={() => dispatch(newTagDialog())}>
+              <Icon className="list-item-icon text-16" color="action">
+                add
+              </Icon>
+              <ListItemText className="truncate" primary="Add Tag" disableTypography />
+            </StyledListItem>
+          ) : (
+            <></>
+          )}
         </List>
       </Paper>
     </div>

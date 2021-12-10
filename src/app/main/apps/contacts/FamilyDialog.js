@@ -71,8 +71,6 @@ function FamilyDialog(props) {
   const [familyData, setFamilyData] = useState();
 
   const id = watch('id');
-  const name = watch('name');
-  const avatar = watch('avatar');
 
   const familyFields = [
     { icon: 'account_circle', name: 'fam_familyName', label: 'Family Name', type: 'text' },

@@ -19,6 +19,7 @@ import {
 function ContactsList(props) {
   const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
+  const contactListDisplay = useSelector(({ contactsApp }) => contactsApp.display.contactList);
   const searchText = useSelector(({ contactsApp }) => contactsApp.contacts.searchText);
   const filterTags = useSelector(({ contactsApp }) => contactsApp.contacts.filterTags);
   const user = useSelector(({ contactsApp }) => contactsApp.user);
@@ -118,17 +119,19 @@ function ContactsList(props) {
         return contacts;
       }
       // Filter contact list by tags
-      return contacts.filter( c => {
-        return c.tags.some( t => {
-          return filterTags.some(ft=> ft === t.tag_id ) 
-        })
-      })
+      return contacts.filter((c) => {
+        return c.tags.some((t) => {
+          return filterTags.some((ft) => ft === t.tag_id);
+        });
+      });
     }
 
     if (contacts) {
       setFilteredData(getFilteredArray(contacts, filterTags));
     }
   }, [contacts, filterTags]);
+
+  if (contactListDisplay.props.display === false) return null;
 
   if (!filteredData) {
     return null;

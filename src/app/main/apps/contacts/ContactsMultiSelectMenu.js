@@ -6,11 +6,18 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setContactsUnstarred, setContactsStarred, removeContacts } from './store/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setContactsUnstarred,
+  setContactsStarred,
+  removeContacts,
+  setContactsTag,
+  clearContactsTag,
+} from './store/contactsSlice';
 
 function ContactsMultiSelectMenu(props) {
   const dispatch = useDispatch();
+  const user = useSelector(({ contactsApp }) => contactsApp.user);
   const { selectedContactIds } = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -23,6 +30,7 @@ function ContactsMultiSelectMenu(props) {
     setAnchorEl(null);
   }
 
+  console.log(selectedContactIds);
   return (
     <>
       <IconButton
@@ -52,6 +60,39 @@ function ContactsMultiSelectMenu(props) {
             </ListItemIcon>
             <ListItemText primary="Remove" />
           </MenuItem>
+
+          {user.tags ? (
+            user.tags.map((t, i) => {
+              return (
+                <MenuItem
+                  onClick={() =>
+                    dispatch(setContactsTag({ selectedIds: selectedContactIds, tag: t }))
+                  }
+                  key={t.tag_id}
+                >
+                  <ListItemIcon className="min-w-40">
+                    <Icon key={t.tag_id} sx={{ color: t.color }} className="list-item-icon text-16">
+                      radio_button_checked
+                    </Icon>
+                  </ListItemIcon>
+                  <ListItemText primary={t.description} />
+                </MenuItem>
+              );
+            })
+          ) : (
+            <></>
+          )}
+
+          <MenuItem
+            onClick={() => dispatch(clearContactsTag({ selectedIds: selectedContactIds }))}
+            key="tags-clear"
+          >
+            <ListItemIcon className="min-w-40">
+              <Icon className="list-item-icon text-16">highlight_off</Icon>
+            </ListItemIcon>
+            <ListItemText primary="Clear Tags" />
+          </MenuItem>
+
           <MenuItem
             onClick={() => {
               dispatch(setContactsStarred(selectedContactIds));

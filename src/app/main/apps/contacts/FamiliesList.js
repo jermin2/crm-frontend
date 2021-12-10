@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import FuseUtils from '@fuse/utils';
 import Avatar from '@mui/material/Avatar';
 import Icon from '@mui/material/Icon';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useMemo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,7 +16,6 @@ import DeleteButton from './ConfirmDelete';
 
 import {
   openQuickContactDialog,
-  toggleStarredContact,
   selectContacts,
 } from './store/contactsSlice';
 
@@ -33,6 +31,7 @@ function FamiliesList(props) {
   const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
   const families = useSelector(selectFamilies);
+  const familyListDisplay = useSelector(({ contactsApp}) => contactsApp.display.familyList)
   const filterTags = useSelector(({ contactsApp }) => contactsApp.contacts.filterTags);
   const searchText = useSelector(({ contactsApp }) => contactsApp.contacts.searchText);
   const user = useSelector(({ contactsApp }) => contactsApp.user);
@@ -182,6 +181,8 @@ function FamiliesList(props) {
       setFilteredData(getFilteredArray(families, filterTags));
     }
   }, [contacts, filterTags]);
+
+  if( familyListDisplay.props.display === false) return null;
 
   if (!filteredData) {
     return null;

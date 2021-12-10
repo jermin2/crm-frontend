@@ -23,14 +23,6 @@ const navigationConfig = [
         icon: 'account_box',
         url: '/apps/contacts/all',
       },
-      {
-        id: 'families',
-        title: 'Families',
-        translate: 'FAMILIES',
-        type: 'item',
-        icon: 'account_box',
-        url: '/apps/families/all',
-      },
     ],
   },
 ];
